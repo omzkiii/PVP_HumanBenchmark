@@ -1,0 +1,27 @@
+services:
+
+  frontend:
+    build: ./frontend
+    container_name: pvpHB-frontend
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "5173:5173"
+    command: [ "npm", "run", "dev" ]
+    networks:
+      - pvpHB-network
+
+  backend:
+    build: ./backend
+    container_name: pvpHB-backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "3000:3000"
+    command: [ "air", "-c", ".air.toml" ]
+    networks:
+      - pvpHB-network
+
+networks:
+  pvpHB-network:
+    driver: bridge

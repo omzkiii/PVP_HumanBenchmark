@@ -8,7 +8,7 @@ import (
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello from Go")
+	fmt.Fprintln(w, "hello")
 }
 
 func main() {
