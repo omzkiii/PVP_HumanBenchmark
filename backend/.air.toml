@@ -1,0 +1,11 @@
+
+# Air configuration file
+[build]
+cmd = "go build -o ./tmp/main ."
+bin = "tmp/main"
+full_bin = "tmp/main"
+exclude_dir = ["vendor", "tmp"]
+include_ext = ["go", "tpl", "tmpl", "html"]
+
+[log]
+time = true
