@@ -11,6 +11,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", indexHandler)
-	fmt.Println("Listening to 8000")
-	http.ListenAndServe(":8000", nil)
+	fmt.Println("Listening to 3000")
+	http.ListenAndServe(":3000", nil)
 }
