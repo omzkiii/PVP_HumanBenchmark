@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 const url = import.meta.env.VITE_API_BASE_URL;
 import "./App.css";
+import Signup from "./components/Signup";
 
 function fetchMessage(): Promise<string> {
   return axios
@@ -48,6 +49,17 @@ function App() {
         <p> Go Server Status {isConnected ? "Connected" : "Connection Failed" }</p>
 
       </div>
+      {message}
+      <button
+        onClick={async () => {
+          const data: string = await fetchMessage();
+          setMessage(data);
+        }}
+      >
+        {" "}
+        Button
+      </button>
+      <Signup />
     </>
   );
 }
