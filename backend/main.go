@@ -11,6 +11,7 @@ import (
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "hi")
+	fmt.Println("CONNECTED")
 }
 
 func testHandler(w http.ResponseWriter, r *http.Request) {
@@ -40,8 +41,6 @@ func main() {
 	http.HandleFunc("/health", backendStateCheck)
 	http.HandleFunc("/", indexHandler)
 	// Route defintion End
-
-	http.HandleFunc("/", indexHandler)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
