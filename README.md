@@ -14,8 +14,11 @@ docker-compose up
 Test Endpoints (e.g., Get /health)
 
 ## TODOs
-- [ ] database setup
-- [ ] user schema
+- [x] database setup
+    - [x] add postgres to docker @done(08/13/25 05:24)
+    - [ ] connect backend to db
+    - [ ] setup tables
+    - [ ] put data to db from backend
 - [ ] backend api
 
 
