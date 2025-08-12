@@ -1,0 +1,14 @@
+# Ignore these globally
+**/node_modules/
+**/tmp/
+**/.git/
+**/.env
+**/dist/
+
+# Backend-specific (Go)
+backend/tmp/
+backend/air.toml
+
+# Frontend-specific
+frontend/node_modules/
+frontend/dist/
