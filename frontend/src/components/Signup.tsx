@@ -18,7 +18,7 @@ export default function Signup() {
   }
 
   function handleSubmit() {
-    axios.post(url + "/signup", { form }).then((res) => {
+    axios.post(url + "/signup", form).then((res) => {
       setSuccess(res.data);
     });
   }

@@ -28,7 +28,7 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(signupData)
 	w.Header().Add("Content-type", "text/html; charset=utf-8")
 	w.WriteHeader(200)
-	w.Write([]byte("FORM RECIEVED"))
+	w.Write([]byte(fmt.Sprintf("Hello %v", signupData.Username)))
 }
 
 func backendStateCheck(w http.ResponseWriter, r *http.Request) {
