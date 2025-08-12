@@ -24,6 +24,22 @@ services:
     networks:
       - pvpHB-network
 
+  db:
+    image: postgres:17
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypass
+      POSTGRES_DB: pvphb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 networks:
   pvpHB-network:
     driver: bridge
+
+volumes:
+  postgres_data:
