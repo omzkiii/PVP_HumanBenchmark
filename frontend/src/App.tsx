@@ -8,27 +8,25 @@ function fetchMessage(): Promise<string> {
   return axios
     .get<string>(url)
     .then((res) => {
-      return res.data; 
+      return res.data;
     })
     .catch((err) => {
       return `Error ${err}`;
     });
 }
 
-
-const BACKEND_URL : string = "http://localhost:3000/"; 
+const BACKEND_URL: string = "http://localhost:3000/";
 
 function App() {
   const [message, setMessage] = useState("Loading.....");
   const [isConnected, setConnectionState] = useState(false);
 
-
   //Check Connection
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/health`)
-        
+        const response = await axios.get(`${BACKEND_URL}/health`);
+
         setMessage(response.data);
         setConnectionState(true);
       } catch (err) {
@@ -43,11 +41,12 @@ function App() {
   return (
     <>
       {message}
-      
 
-      <div> 
-        <p> Go Server Status {isConnected ? "Connected" : "Connection Failed" }</p>
-
+      <div>
+        <p>
+          {" "}
+          Go Server Status {isConnected ? "Connected" : "Connection Failed"}
+        </p>
       </div>
       {message}
       <button

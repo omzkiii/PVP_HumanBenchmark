@@ -36,7 +36,6 @@ func backendStateCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
 	// Route Definitions
 	http.HandleFunc("/health", backendStateCheck)
 	http.HandleFunc("/", indexHandler)
