@@ -11,8 +11,17 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "hello")
 }
 
+func backendStateCheck(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Backend is healthy"))
+}
+
 func main() {
+
+	// Route Definitions
+	http.HandleFunc("/health", backendStateCheck)
 	http.HandleFunc("/", indexHandler)
+	// Route defintion End
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},

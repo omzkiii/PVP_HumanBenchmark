@@ -1,0 +1,20 @@
+# Dependency directories
+**/node_module
+node_modules/
+dist/
+
+# Environment/config files
+.env
+.env.local
+
+# Version control
+.git/
+.gitignore
+
+# OS/IDE files
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
