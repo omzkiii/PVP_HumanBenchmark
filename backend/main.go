@@ -1,46 +1,18 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/omzkiii/PVP_HumanBenchmark/backend/routes"
 
 	"github.com/rs/cors"
 )
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "hi")
-	fmt.Println("CONNECTED")
-}
-
-func testHandler(w http.ResponseWriter, r *http.Request) {
-	type signupForm struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	signupData := signupForm{}
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&signupData)
-	if err != nil {
-		log.Println("Decoding error")
-	}
-	fmt.Println(signupData)
-	w.Header().Add("Content-type", "text/html; charset=utf-8")
-	w.WriteHeader(200)
-	w.Write([]byte(fmt.Sprintf("Hello %v", signupData.Username)))
-}
-
-func backendStateCheck(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Backend is healthy"))
-}
-
 func main() {
-	// Route Definitions
-	http.HandleFunc("/health", backendStateCheck)
-	http.HandleFunc("/", indexHandler)
-	// Route defintion End
+	// ROUTES
+	routes.Users()
+	routes.Tests()
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
@@ -48,8 +20,6 @@ func main() {
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,
 	}).Handler(http.DefaultServeMux)
-	http.HandleFunc("POST /signup", testHandler)
-	http.HandleFunc("GET /test", indexHandler)
 
 	fmt.Println("Listening to 3000")
 	http.ListenAndServe(":3000", handler)
