@@ -6,11 +6,17 @@
 3. run:
 
 ```sh
+docker-compose build
+
 docker-compose up
 ```
 
 Test Endpoints (e.g., Get /health)
 
+## TODOs
+- [ ] database setup
+- [ ] user schema
+- [ ] backend api
 
 
 

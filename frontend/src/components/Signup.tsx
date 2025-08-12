@@ -22,7 +22,6 @@ export default function Signup() {
       setSuccess(res.data);
     });
   }
-  console.log(form);
   return (
     <div>
       <div>
