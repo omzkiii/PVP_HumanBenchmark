@@ -11,7 +11,7 @@ import (
 )
 
 type db struct {
-	q database.Queries
+	*database.Queries
 }
 
 func testHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,8 +31,8 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello %v", signupData.Username)
 }
 
-func (a *db) getUsersHandler(w http.ResponseWriter, r *http.Request) {
-	users, err := a.q.GetUsers(context.Background())
+func (q *db) getUsersHandler(w http.ResponseWriter, r *http.Request) {
+	users, err := q.GetUsers(context.Background())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -50,9 +50,9 @@ func (a *db) getUsersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Users(queries *database.Queries) {
-	a := db{
-		q: *queries,
+	q := db{
+		Queries: queries,
 	}
-	http.HandleFunc("GET /getUsers", a.getUsersHandler)
+	http.HandleFunc("GET /getUsers", q.getUsersHandler)
 	http.HandleFunc("POST /signup", testHandler)
 }
