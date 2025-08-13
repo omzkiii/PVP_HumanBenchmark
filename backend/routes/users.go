@@ -43,7 +43,7 @@ func (a *db) getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	var users []database.User
 	for rows.Next() {
 		var u database.User
-		if err := rows.Scan(&u.ID, &u.Name, &u.Email); err != nil {
+		if err := rows.Scan(&u.ID, &u.Username, &u.PasswordHash, &u.CreatedAt); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
