@@ -7,7 +7,28 @@ package database
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const createUser = `-- name: CreateUser :one
+INSERT INTO users (
+   username, password_hash
+) VALUES ( $1, $2 )
+RETURNING id
+`
+
+type CreateUserParams struct {
+	Username     string
+	PasswordHash string
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (pgtype.UUID, error) {
+	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.PasswordHash)
+	var id pgtype.UUID
+	err := row.Scan(&id)
+	return id, err
+}
 
 const getUsers = `-- name: GetUsers :many
 SELECT id, username, password_hash, created_at FROM users

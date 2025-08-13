@@ -3,7 +3,6 @@ package routes
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -14,21 +13,24 @@ type db struct {
 	*database.Queries
 }
 
-func testHandler(w http.ResponseWriter, r *http.Request) {
-	type signupForm struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	signupData := signupForm{}
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&signupData)
+func (q *db) signupHandler(w http.ResponseWriter, r *http.Request) {
+	data := database.CreateUserParams{}
+	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		log.Println("Decoding error")
+		return
 	}
-	fmt.Println(signupData)
+
+	user_id, err := q.CreateUser(context.Background(), data)
+	if err != nil {
+		w.WriteHeader(200)
+		w.Header().Add("Content-type", "text/plain; charset=utf-8")
+		w.Write([]byte(err.Error()))
+		return
+	}
 	w.Header().Add("Content-type", "text/html; charset=utf-8")
 	w.WriteHeader(200)
-	fmt.Fprintf(w, "Hello %v", signupData.Username)
+	w.Write([]byte(user_id.String()))
 }
 
 func (q *db) getUsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,5 +56,5 @@ func Users(queries *database.Queries) {
 		Queries: queries,
 	}
 	http.HandleFunc("GET /getUsers", q.getUsersHandler)
-	http.HandleFunc("POST /signup", testHandler)
+	http.HandleFunc("POST /signup", q.signupHandler)
 }
