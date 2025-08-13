@@ -9,6 +9,24 @@
 docker-compose build
 
 docker-compose up
+
+
+docker compose exec backend goose -dir ./database/migrations postgres {DB URL} up
+
+```
+
+```
+    Docker Table Navigation
+        - For navigating postgres in docker container
+
+    bash: docker compose exec db psql -U pvphb -d pvphb
+    \dt: list all tables
+    \d table_name: tables names
+    \d users: users
+    \q : exit
+
+    Note: you can also query data i.e SELECT * FROM users;
+
 ```
 
 Test Endpoints (e.g., Get /health)

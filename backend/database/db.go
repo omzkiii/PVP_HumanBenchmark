@@ -9,7 +9,7 @@ import (
 )
 
 func Init() {
-	dbpool, err := pgxpool.New(context.Background(), "postgres://pvphb:mypass@db:5432/pvphb")
+	dbpool, err := pgxpool.New(context.Background(), "postgres://pvphb:mypass@db:5432/pvphb") //Please ENV this in the future
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		os.Exit(1)
