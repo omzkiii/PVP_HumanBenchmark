@@ -12,10 +12,11 @@ import (
 
 func main() {
 	// Database
-	database.Init()
+	db := database.Init()
+	defer db.Close()
 
 	// ROUTES
-	routes.Users()
+	routes.Users(db)
 	routes.Tests()
 
 	handler := cors.New(cors.Options{
