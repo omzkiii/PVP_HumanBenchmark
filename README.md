@@ -7,37 +7,60 @@
 
 ```sh
 docker-compose build
-
+```
+```sh
 docker-compose up
-
-
+```
+```sh
 docker compose exec backend goose -dir ./database/migrations postgres {DB URL} up
-
 ```
+----------
 
-```
-    Docker Table Navigation
-        - For navigating postgres in docker container
-
-    bash: docker compose exec db psql -U pvphb -d pvphb
+## Docker Table Navigation
+- For navigating postgres in docker container
+```sh
+    docker compose exec db psql -U pvphb -d pvphb
     \dt: list all tables
     \d table_name: tables names
     \d users: users
     \q : exit
-
-    Note: you can also query data i.e SELECT * FROM users;
-
 ```
+> [!NOTE]
+> you can also query data i.e SELECT * FROM users;
 
-Test Endpoints (e.g., Get /health)
+----------
+
+
+## Test Endpoints
+- localhost:3000/health
+
+
+
+> [!NOTE]
+> run `go mod tidy` in `./backend` to clean up unused packages
+
+----------
 
 ## TODOs
-- [x] database setup
-    - [x] add postgres to docker @done(08/13/25 05:24)
-    - [x] connect backend to db @done(08/13/25 13:55)
-    - [x] put data to db from backend @done(08/13/25 21:58)
-    - [ ] setup tables
-- [ ] backend api
+
+### Database
+- [x] add postgres to docker @done(08/13/25 05:24)
+- [x] connect backend to db @done(08/13/25 13:55)
+- [x] put data to db from backend @done(08/13/25 21:58)
+- [x] setup tables @done(08/14/25 00:26)
+
+### backend
+- [x] get all users @done(08/14/25 00:27)
+- [ ] get user
+
+### frontend
+- [ ] landing page
+- [ ] login page
+- [ ] signup page
+
+
+
+
 
 
 
