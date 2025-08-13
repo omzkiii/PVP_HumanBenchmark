@@ -13,7 +13,29 @@ services:
       - pvpHB-network
     restart: unless-stopped
 
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: pvphb
+      POSTGRES_USER: pvphb
+      POSTGRES_PASSWORD: mypass
+    container_name: postgres_db
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U pvphb" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pvpHB-network
+
   backend:
+    depends_on:
+      - db
     build: ./backend
     container_name: pvpHB-backend
     volumes:
@@ -23,19 +45,6 @@ services:
     command: [ "air", "-c", ".air.toml" ]
     networks:
       - pvpHB-network
-
-  db:
-    image: postgres:17
-    container_name: postgres_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypass
-      POSTGRES_DB: pvphb
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
 networks:
   pvpHB-network:
