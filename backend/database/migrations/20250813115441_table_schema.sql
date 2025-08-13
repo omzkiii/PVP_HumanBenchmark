@@ -81,6 +81,6 @@ DROP TABLE IF EXISTS game_results;
 DROP TABLE IF EXISTS match_participants;
 DROP TABLE IF EXISTS matches;
 DROP TABLE IF EXISTS queue_tickets;
-DROP TABLE IF EXISTS ngs;
+DROP TABLE IF EXISTS ratings;
 DROP TABLE IF EXISTS users;
 -- +goose StatementEnd
