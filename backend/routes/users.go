@@ -7,12 +7,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/omzkiii/PVP_HumanBenchmark/backend/database"
 )
 
 type db struct {
-	pool *pgxpool.Pool
+	q database.Queries
 }
 
 func testHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,21 +32,10 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *db) getUsersHandler(w http.ResponseWriter, r *http.Request) {
-	rows, err := a.pool.Query(context.Background(), "SELECT * FROM users")
+	users, err := a.q.GetUsers(context.Background())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-	defer rows.Close()
-
-	var users []database.User
-	for rows.Next() {
-		var u database.User
-		if err := rows.Scan(&u.ID, &u.Username, &u.PasswordHash, &u.CreatedAt); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		users = append(users, u)
 	}
 
 	data, err := json.Marshal(users)
@@ -61,9 +49,9 @@ func (a *db) getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-func Users(dbpool *pgxpool.Pool) {
+func Users(queries *database.Queries) {
 	a := db{
-		pool: dbpool,
+		q: *queries,
 	}
 	http.HandleFunc("GET /getUsers", a.getUsersHandler)
 	http.HandleFunc("POST /signup", testHandler)

@@ -12,11 +12,13 @@ import (
 
 func main() {
 	// Database
-	db := database.Init()
-	defer db.Close()
+	dbpool := database.Init()
+	defer dbpool.Close()
+
+	queries := database.New(dbpool)
 
 	// ROUTES
-	routes.Users(db)
+	routes.Users(queries)
 	routes.Tests()
 
 	handler := cors.New(cors.Options{
