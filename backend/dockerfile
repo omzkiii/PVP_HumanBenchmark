@@ -1,5 +1,10 @@
 FROM golang:1.24
 
+
+# Install goose # Delete Later
+RUN go install github.com/pressly/goose/v3/cmd/goose@latest
+
+
 WORKDIR /app
 RUN go install github.com/air-verse/air@latest
 COPY go.mod go.sum ./
