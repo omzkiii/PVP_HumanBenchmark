@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/omzkiii/PVP_HumanBenchmark/backend/database"
 	"github.com/omzkiii/PVP_HumanBenchmark/backend/routes"
 
 	"github.com/rs/cors"
 )
 
 func main() {
+	// Database
+	database.Init()
+
 	// ROUTES
 	routes.Users()
 	routes.Tests()
