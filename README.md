@@ -35,8 +35,8 @@ Test Endpoints (e.g., Get /health)
 - [x] database setup
     - [x] add postgres to docker @done(08/13/25 05:24)
     - [x] connect backend to db @done(08/13/25 13:55)
+    - [x] put data to db from backend @done(08/13/25 21:58)
     - [ ] setup tables
-    - [ ] put data to db from backend
 - [ ] backend api
 
 
