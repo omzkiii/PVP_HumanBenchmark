@@ -19,8 +19,8 @@ RETURNING id
 `
 
 type CreateUserParams struct {
-	Username     string
-	PasswordHash string
+	Username     string `json:"username"`
+	PasswordHash string `json:"password_hash"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (pgtype.UUID, error) {
@@ -57,4 +57,16 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const login = `-- name: Login :one
+SELECT password_hash FROM users
+WHERE username = $1
+`
+
+func (q *Queries) Login(ctx context.Context, username string) (string, error) {
+	row := q.db.QueryRow(ctx, login, username)
+	var password_hash string
+	err := row.Scan(&password_hash)
+	return password_hash, err
 }
