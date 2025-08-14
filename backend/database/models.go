@@ -9,59 +9,59 @@ import (
 )
 
 type GameResult struct {
-	MatchID pgtype.UUID
-	GameNo  int32
-	GameID  string
-	Winner  pgtype.UUID
-	Meta    []byte
+	MatchID pgtype.UUID `json:"match_id"`
+	GameNo  int32       `json:"game_no"`
+	GameID  string      `json:"game_id"`
+	Winner  pgtype.UUID `json:"winner"`
+	Meta    []byte      `json:"meta"`
 }
 
 type Match struct {
-	ID        pgtype.UUID
-	Region    string
-	Mode      string
-	CreatedAt pgtype.Timestamptz
-	Winner    pgtype.UUID
+	ID        pgtype.UUID        `json:"id"`
+	Region    string             `json:"region"`
+	Mode      string             `json:"mode"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	Winner    pgtype.UUID        `json:"winner"`
 }
 
 type MatchParticipant struct {
-	MatchID pgtype.UUID
-	UserID  pgtype.UUID
-	Seat    int32
+	MatchID pgtype.UUID `json:"match_id"`
+	UserID  pgtype.UUID `json:"user_id"`
+	Seat    int32       `json:"seat"`
 }
 
 type MmrHistory struct {
-	ID        int32
-	UserID    pgtype.UUID
-	MatchID   pgtype.UUID
-	OldMmr    int32
-	NewMmr    int32
-	ChangedAt pgtype.Timestamptz
+	ID        int32              `json:"id"`
+	UserID    pgtype.UUID        `json:"user_id"`
+	MatchID   pgtype.UUID        `json:"match_id"`
+	OldMmr    int32              `json:"old_mmr"`
+	NewMmr    int32              `json:"new_mmr"`
+	ChangedAt pgtype.Timestamptz `json:"changed_at"`
 }
 
 type QueueTicket struct {
-	ID             pgtype.UUID
-	UserID         pgtype.UUID
-	IsGuest        bool
-	Region         string
-	Mode           string
-	MmrSnapshot    int32
-	Prefs          []byte
-	Status         pgtype.Text
-	QueuedAt       pgtype.Timestamptz
-	DequeuedAt     pgtype.Timestamptz
-	MatchedMatchID pgtype.UUID
+	ID             pgtype.UUID        `json:"id"`
+	UserID         pgtype.UUID        `json:"user_id"`
+	IsGuest        bool               `json:"is_guest"`
+	Region         string             `json:"region"`
+	Mode           string             `json:"mode"`
+	MmrSnapshot    int32              `json:"mmr_snapshot"`
+	Prefs          []byte             `json:"prefs"`
+	Status         pgtype.Text        `json:"status"`
+	QueuedAt       pgtype.Timestamptz `json:"queued_at"`
+	DequeuedAt     pgtype.Timestamptz `json:"dequeued_at"`
+	MatchedMatchID pgtype.UUID        `json:"matched_match_id"`
 }
 
 type Rating struct {
-	UserID    pgtype.UUID
-	Mmr       int32
-	UpdatedAt pgtype.Timestamptz
+	UserID    pgtype.UUID        `json:"user_id"`
+	Mmr       int32              `json:"mmr"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 }
 
 type User struct {
-	ID           pgtype.UUID
-	Username     string
-	PasswordHash string
-	CreatedAt    pgtype.Timestamptz
+	ID           pgtype.UUID        `json:"id"`
+	Username     string             `json:"username"`
+	PasswordHash string             `json:"password_hash"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
 }
