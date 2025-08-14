@@ -7,10 +7,21 @@ import (
 	"net/http"
 
 	"github.com/omzkiii/PVP_HumanBenchmark/backend/database"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type db struct {
 	*database.Queries
+}
+
+func handleError(err error, w http.ResponseWriter) {
+	if err != nil {
+		log.Fatal(err)
+		w.WriteHeader(500)
+		w.Header().Add("Content-type", "text/plain; charset=utf-8")
+		w.Write([]byte(err.Error()))
+		return
+	}
 }
 
 func (q *db) signupHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,41 +31,22 @@ func (q *db) signupHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Decoding error")
 		return
 	}
+	hashed_pw, err := bcrypt.GenerateFromPassword([]byte(data.PasswordHash), bcrypt.DefaultCost)
+	handleError(err, w)
+
+	data.PasswordHash = string(hashed_pw)
 
 	user_id, err := q.CreateUser(context.Background(), data)
-	if err != nil {
-		w.WriteHeader(200)
-		w.Header().Add("Content-type", "text/plain; charset=utf-8")
-		w.Write([]byte(err.Error()))
-		return
-	}
+	handleError(err, w)
+
 	w.Header().Add("Content-type", "text/html; charset=utf-8")
 	w.WriteHeader(200)
 	w.Write([]byte(user_id.String()))
-}
-
-func (q *db) getUsersHandler(w http.ResponseWriter, r *http.Request) {
-	users, err := q.GetUsers(context.Background())
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	data, err := json.Marshal(users)
-	if err != nil {
-		log.Printf("Error marshalling JSON: %s", err)
-		w.WriteHeader(500)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(data)
 }
 
 func Users(queries *database.Queries) {
 	q := db{
 		Queries: queries,
 	}
-	http.HandleFunc("GET /getUsers", q.getUsersHandler)
 	http.HandleFunc("POST /signup", q.signupHandler)
 }
