@@ -1,7 +1,5 @@
-button {
-  width: 5rem;
-  height: 5rem;
-  margin: 1rem;
-  background-color: green;
+.NotFound {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
-

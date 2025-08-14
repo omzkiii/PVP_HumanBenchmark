@@ -3,6 +3,9 @@ import axios from "axios";
 const url = import.meta.env.VITE_API_BASE_URL;
 import "./App.css";
 import Signup from "./components/Signup";
+import Navigation from "./components/Navigation";
+import LandingPageContent from "./components/LandingContent";
+import { Link } from "react-router-dom";
 
 function fetchMessage(): Promise<string> {
   return axios
@@ -40,25 +43,8 @@ function App() {
 
   return (
     <>
-      {message}
-
-      <div>
-        <p>
-          {" "}
-          Go Server Status {isConnected ? "Connected" : "Connection Failed"}
-        </p>
-      </div>
-      {message}
-      <button
-        onClick={async () => {
-          const data: string = await fetchMessage();
-          setMessage(data);
-        }}
-      >
-        {" "}
-        Button
-      </button>
-      <Signup />
+      <Navigation />
+      <LandingPageContent />
     </>
   );
 }
