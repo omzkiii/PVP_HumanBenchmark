@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useState, type ChangeEvent } from "react";
-const url = import.meta.env.VITE_API_BASE_URL;
+//const url = import.meta.env.VITE_API_BASE_URL;
+const url = "http://localhost:3000";
+
 type SignupForm = {
   username: string;
   password: string;
@@ -18,7 +20,7 @@ export default function Login() {
   }
 
   function handleSubmit() {
-    axios.post(url + "/signup", form).then((res) => {
+    axios.post(url + "/login", form).then((res) => {
       setSuccess(res.data);
     });
   }
