@@ -19,6 +19,7 @@ func main() {
 
 	// ROUTES
 	routes.Users(queries)
+	routes.Connector()
 	routes.Tests()
 
 	handler := cors.New(cors.Options{

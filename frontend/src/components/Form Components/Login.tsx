@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useState, type ChangeEvent } from "react";
-//const url = import.meta.env.VITE_API_BASE_URL;
-const url = "http://localhost:3000";
-
+const url = import.meta.env.VITE_API_BASE_URL;
 type SignupForm = {
   username: string;
   password: string;

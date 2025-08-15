@@ -18,8 +18,6 @@ function fetchMessage(): Promise<string> {
     });
 }
 
-const BACKEND_URL: string = "http://localhost:3000/";
-
 function App() {
   const [message, setMessage] = useState("Loading.....");
   const [isConnected, setConnectionState] = useState(false);
@@ -28,7 +26,7 @@ function App() {
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/health`);
+        const response = await axios.get(`${url}/health`);
 
         setMessage(response.data);
         setConnectionState(true);
