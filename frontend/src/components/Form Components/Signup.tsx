@@ -4,14 +4,12 @@ const url = import.meta.env.VITE_API_BASE_URL;
 type SignupForm = {
   username: string;
   password: string;
-  confirmpassword: string;
 };
 
 export default function Signup() {
   const [form, setForm] = useState<SignupForm>({
     username: "",
     password: "",
-    confirmpassword: "",
   });
   const [success, setSuccess] = useState();
   function handleOnChange(e: ChangeEvent<HTMLInputElement>) {
@@ -42,14 +40,7 @@ export default function Signup() {
           value={form.password}
         />
       </div>
-      <div>
-        confirm password
-        <input
-          name="confirm password"
-          onChange={handleOnChange}
-          value={form.confirmpassword}
-        />
-      </div>
+  
       <button onClick={handleSubmit}>Sign Up</button>
       <p>{success}</p>
     </div>

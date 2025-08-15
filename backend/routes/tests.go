@@ -17,5 +17,4 @@ func backendStateCheck(w http.ResponseWriter, r *http.Request) {
 
 func Tests() {
 	http.HandleFunc("/health", backendStateCheck)
-	http.HandleFunc("/", indexHandler)
 }

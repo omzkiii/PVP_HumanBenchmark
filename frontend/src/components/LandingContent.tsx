@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../css/main.css";
 
+
+
 export default function LandingPageContent() {
+    let navigate = useNavigate();
+    const routeChange = (id: number) => {
+        navigate(`/matches/${id}`);
+    };
+
     return (
         <>
         <div className="LandingPage">
@@ -15,7 +23,7 @@ export default function LandingPageContent() {
                 </div>
             </div>
             <div> 
-                <button id="MM-btn"> LOOK FOR A MATCH </button>
+                <button id="MM-btn" onClick={() => routeChange(123)}> LOOK FOR A MATCH </button>
                 <p> CHALLENGE OTHERS FOR THE TITLE OF ULTIMATE HUMAN </p>
             </div>
             
