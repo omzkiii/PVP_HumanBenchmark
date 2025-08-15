@@ -6,7 +6,7 @@ type SignupForm = {
   password: string;
 };
 
-export default function Signup() {
+export default function Login() {
   const [form, setForm] = useState<SignupForm>({
     username: "",
     password: "",
@@ -23,7 +23,7 @@ export default function Signup() {
     });
   }
   return (
-    <div>S
+    <div>
       <div>
         username
         <input

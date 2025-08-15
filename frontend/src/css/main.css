@@ -44,9 +44,8 @@ a {
     list-style: none;
     font-size: 20px;
     font-weight: bold;
-    margin: 0 5rem;
+    margin: 0 10rem;
     border-bottom: 1px solid var(--dark-clr) !important;
-    box-shadow: 1px 1px 10px 5px #ccc;
 
 }
 

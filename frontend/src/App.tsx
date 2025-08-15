@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 const url = import.meta.env.VITE_API_BASE_URL;
 import "./App.css";
-import Signup from "./components/Signup";
+import Signup from "./components/Form Components/Signup";
 import Navigation from "./components/Navigation";
 import LandingPageContent from "./components/LandingContent";
 import { Link } from "react-router-dom";

@@ -1,10 +1,15 @@
 import { Link } from "react-router-dom";
+import Login from "./Login";
 
 function LoginModal({ onClose }: { onClose: () => void }) {
   return (  
     <div className="modal">
-      <button onClick={onClose}>X</button>
-      <Link to="/signup">Go to Signup</Link>
+      <div>
+        <button onClick={onClose}>X</button>
+        <Login />
+
+      </div>
+      
     </div>
   );
 }

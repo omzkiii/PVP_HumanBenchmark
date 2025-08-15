@@ -1,8 +1,9 @@
 import { useEffect, useState, useContext } from "react";
 import "../css/main.css";
+import "../css/popup.css"; //Handles Popup design
 import {Link, useLocation } from 'react-router-dom'; // Not 'react-router'
-import LoginModal from "./LoginModal";
-import SignupModal from "./SignupModal";
+import LoginModal from "./Form Components/LoginModal";
+import SignupModal from "./Form Components/SignupModal";
 
 
 
