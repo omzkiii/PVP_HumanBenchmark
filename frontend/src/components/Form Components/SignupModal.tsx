@@ -1,10 +1,14 @@
 import { Link } from "react-router-dom";
+import Signup from "./Signup";
 
 function SignupModal({ onClose }: { onClose: () => void }) {
   return (  
     <div className="modal">
-      <button onClick={onClose}>X</button>
-      <Link to="/signup">Go to Signup</Link>
+      <div>
+        <button onClick={onClose}>X</button>
+        <Signup />
+      </div>
+      
     </div>
   );
 }
