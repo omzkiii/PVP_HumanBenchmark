@@ -5,4 +5,5 @@ post() {
       -H 'Content-Type: application/json' \
       localhost:3000/login
 }
+# post peter mypassword123
 post peter mypassword123

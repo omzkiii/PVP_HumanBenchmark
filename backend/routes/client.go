@@ -5,7 +5,6 @@ import (
 )
 
 type client struct { // Like an object
-	
 
 	// socket is the wewb scoket for this client
 	socket *websocket.Conn
@@ -15,10 +14,7 @@ type client struct { // Like an object
 
 	// room is the room this client is chatting in
 	room *room
-
 }
-
-
 
 func (c *client) read() {
 	// Handle in which the user is sending a message to the room
@@ -33,13 +29,12 @@ func (c *client) read() {
 	}
 }
 
-func (c* client) write() {
+func (c *client) write() {
 	defer c.socket.Close()
 	for msg := range c.recieve {
 		err := c.socket.WriteMessage(websocket.TextMessage, msg)
-		if ( err != nil) {
+		if err != nil {
 			return
 		}
 	}
-
 }

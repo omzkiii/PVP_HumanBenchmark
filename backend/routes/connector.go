@@ -10,25 +10,24 @@ import (
 
 // templ represents a single template
 type templateHandler struct {
-	once sync.Once
+	once     sync.Once
 	filename string
-	templ *template.Template
+	templ    *template.Template
 }
 
-//ServeHTTTP handles the HTTP requests
+// ServeHTTTP handles the HTTP requests
 func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("/room ServeHTTP called")
-	t.once.Do(func ()  {
+	t.once.Do(func() {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
 	t.templ.Execute(w, r)
 }
 
-
 func Connector() {
 	fmt.Println("Registering /room WebSocket endpoint")
 
-    r := newRoom()
-    http.Handle("/room", r)
-    go r.run()
+	r := newRoom()
+	http.Handle("/room", r)
+	go r.run()
 }
