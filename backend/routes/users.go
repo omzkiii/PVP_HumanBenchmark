@@ -18,6 +18,7 @@ func Users(queries *database.Queries) {
 	http.HandleFunc("POST /signup", q.signupHandler)
 	http.HandleFunc("POST /login", q.loginHandler)
 	http.Handle("GET /users", tokenMiddleware(q.getUsersHandler))
+
 }
 
 // HANDLERS
@@ -82,6 +83,7 @@ func (q *db) signupHandler(w http.ResponseWriter, r *http.Request) {
 
 func (q *db) loginHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
+
 	data := database.CreateUserParams{}
 	err = json.NewDecoder(r.Body).Decode(&data)
 	if handleError(err, w) {
