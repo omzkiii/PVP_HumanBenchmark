@@ -17,7 +17,12 @@ func Users(queries *database.Queries) {
 	}
 	http.HandleFunc("POST /signup", q.signupHandler)
 	http.HandleFunc("POST /login", q.loginHandler)
-	http.HandleFunc("GET /users", q.getUsersHandler)
+	http.Handle("GET /users", tokenMiddleware(q.getUsersHandler))
+	// cannot use q.getUsersHandler (value of type func(w http.ResponseWriter,
+	// r *http.Request)) as http.Handler value in argument to tokenMiddleware:
+	// func(w http.ResponseWriter, r *http.Request) does not implement
+	// http.Handler (missing method ServeHTTP) compiler (InvalidIfaceAssign)
+	// routes/users.go:20:43
 }
 
 // HANDLERS
@@ -68,8 +73,9 @@ func (q *db) signupHandler(w http.ResponseWriter, r *http.Request) {
 
 	token := createToken(w, data.Username)
 	http.SetCookie(w, &http.Cookie{
-		Name:     "token",
-		Value:    token,
+		Name:  "token",
+		Value: token,
+		// NOTE: TEST EXPIRTY TIME
 		Expires:  time.Now().Add(time.Minute),
 		HttpOnly: true,
 		Secure:   false,
@@ -82,15 +88,15 @@ func (q *db) signupHandler(w http.ResponseWriter, r *http.Request) {
 
 func (q *db) loginHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
-	req_token, err := r.Cookie("token")
-	if err == nil {
-		fmt.Println(req_token.Value)
-		req_claims, err := validateToken(req_token.Value)
-		if handleError(err, w) {
-			fmt.Println("INVALID TOKEN")
-		}
-		fmt.Println(req_claims.ExpiresAt)
-	}
+	// req_token, err := r.Cookie("token")
+	// if err == nil {
+	// 	fmt.Println(req_token.Value)
+	// 	req_claims, err := validateToken(req_token.Value)
+	// 	if handleError(err, w) {
+	// 		fmt.Println("INVALID TOKEN")
+	// 	}
+	// 	fmt.Println(req_claims.ExpiresAt)
+	// }
 	data := database.CreateUserParams{}
 	err = json.NewDecoder(r.Body).Decode(&data)
 	if handleError(err, w) {
