@@ -1,34 +1,31 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 import { useEffect, useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
 const url = import.meta.env.VITE_API_BASE_URL;
 
 export default function MatchPage() {
   const params = useParams(); // For handeling queue ticket id
 
-  const socket:any = useRef(null);
+  const socket: any = useRef(null);
 
-
-  const [message, setMessage] = useState("")
-
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     socket.current = new WebSocket(`ws://localhost:3000/room`); // Connect to a room websocket
 
     // Set up event listeners
     socket.current.onopen = () => {
-      console.log('WebSocket connected');
+      console.log("WebSocket connected");
     };
 
-    socket.current.onmessage = (event : any) => {
-      console.log('Message from server:', event.data);
+    socket.current.onmessage = (event: any) => {
+      console.log("Message from server:", event.data);
     };
 
     socket.current.onclose = () => {
-      console.log('WebSocket disconnected');
+      console.log("WebSocket disconnected");
     };
-
 
     // Cleanup on component unmount
     /*return () => {
@@ -36,15 +33,13 @@ export default function MatchPage() {
         socket.current.close();
       }
     };*/
+  }, []); // Empty makes it run once
 
-
-  }, []) // Empty makes it run once
-
-  const handleSubmit = (event : any) => {
+  const handleSubmit = (event: any) => {
     event.preventDefault();
     if (socket.current && socket.current.readyState === WebSocket.OPEN) {
       socket.current.send(message);
-      setMessage('');
+      setMessage("");
     }
   };
 
@@ -58,7 +53,7 @@ export default function MatchPage() {
         />
         <input type="submit" value="Send" />
       </form>
-
     </>
   );
 }
+

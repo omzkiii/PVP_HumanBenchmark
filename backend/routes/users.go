@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/omzkiii/PVP_HumanBenchmark/backend/database"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,8 +28,11 @@ type db struct {
 
 func handleError(err error, w http.ResponseWriter) bool {
 	if err != nil {
+		fmt.Println("-----error-----")
+		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		w.Header().Add("Content-type", "text/plain; charset=utf-8")
+		fmt.Println("---------------")
 		return true
 	}
 	return false
@@ -63,18 +65,34 @@ func (q *db) signupHandler(w http.ResponseWriter, r *http.Request) {
 	if handleError(err, w) {
 		return
 	}
+
+	token := createToken(w, data.Username)
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    token,
+		Expires:  time.Now().Add(time.Minute),
+		HttpOnly: true,
+		Secure:   false,
+		Path:     "/",
+	})
 	w.Header().Add("Content-type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(user_id.String()))
 }
 
 func (q *db) loginHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: Handle cookies
-	// TESTING COOKIES
-	fmt.Println(r.Cookies())
-
+	var err error
+	req_token, err := r.Cookie("token")
+	if err == nil {
+		fmt.Println(req_token.Value)
+		req_claims, err := validateToken(req_token.Value)
+		if handleError(err, w) {
+			fmt.Println("INVALID TOKEN")
+		}
+		fmt.Println(req_claims.ExpiresAt)
+	}
 	data := database.CreateUserParams{}
-	err := json.NewDecoder(r.Body).Decode(&data)
+	err = json.NewDecoder(r.Body).Decode(&data)
 	if handleError(err, w) {
 		return
 	}
@@ -91,7 +109,7 @@ func (q *db) loginHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
 		Value:    token,
-		Expires:  time.Now().Add(time.Hour),
+		Expires:  time.Now().Add(time.Minute),
 		HttpOnly: true,
 		Secure:   false,
 		Path:     "/",
@@ -100,33 +118,4 @@ func (q *db) loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(data.Username))
-}
-
-type Claims struct {
-	jwt.RegisteredClaims
-}
-
-func validateToken(token string) *Claims {
-	key := []byte("sample_key")
-	t, _ := jwt.ParseWithClaims(token, &Claims{}, func(t *jwt.Token) (any, error) {
-		return key, nil
-	})
-	claims := t.Claims.(*Claims)
-	return claims
-}
-
-func createToken(w http.ResponseWriter, username string) string {
-	key := []byte("sample_key")
-	claim := Claims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "this server",
-			Subject:   username,
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
-		},
-	}
-	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claim).SignedString(key)
-	if handleError(err, w) {
-		return ""
-	}
-	return token
 }

@@ -8,7 +8,6 @@ import (
 )
 
 type room struct {
-
 	// clients holds all current clients in this room
 	clients map[*client]bool
 
@@ -18,10 +17,9 @@ type room struct {
 	// leave is a channel for clients wishin to leave the room
 	leave chan *client
 
-	//forwarr is a channel that holds inconming messages that shopuld be forwarrded to the other clients
+	// forwarr is a channel that holds inconming messages that shopuld be forwarrded to the other clients
 	forward chan []byte
 }
-
 
 // New Room Constructor
 func newRoom() *room {
@@ -58,7 +56,7 @@ const (
 )
 
 var upgrader = &websocket.Upgrader{
-	ReadBufferSize: socketBufferSize, 
+	ReadBufferSize:  socketBufferSize,
 	WriteBufferSize: messageBufferSize,
 	CheckOrigin: func(r *http.Request) bool {
 		return true
