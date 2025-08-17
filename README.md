@@ -53,6 +53,7 @@ docker compose exec backend goose -dir ./database/migrations postgres {DB URL} u
 - [x] get all users @done(08/14/25 00:27)
 - [x] create user @done(08/14/25 06:25)
 - [x] token middleware @done(08/16/25 18:36)
+- [x] lobby and private rooms @done(08/17/25 22:26)
 - [ ] delete user
 
 ### frontend
