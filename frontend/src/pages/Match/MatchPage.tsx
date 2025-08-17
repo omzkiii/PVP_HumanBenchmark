@@ -28,12 +28,12 @@ export default function MatchPage() {
         if (msg.action === "switch" && msg.url) {
           console.log(`Switching to new socket: ${msg.url}`);
           socket.current.close();
-          connect(msg.url); // reconnect to new socket
+          connect(msg.url);
         } else {
           console.log("Message:", msg);
         }
       } catch (err) {
-        console.log("");
+        console.log(event.data);
       }
     };
 
@@ -47,27 +47,6 @@ export default function MatchPage() {
   }
   useEffect(() => {
     connect(`ws://localhost:3000/room`);
-    // socket.current = new WebSocket(`ws://localhost:3000/room`); // Connect to a room websocket
-    //
-    // // Set up event listeners
-    // socket.current.onopen = () => {
-    //   console.log("WebSocket connected");
-    // };
-    //
-    // socket.current.onmessage = (event: any) => {
-    //   console.log("Message from server:", event.data);
-    // };
-    //
-    // socket.current.onclose = () => {
-    //   console.log("WebSocket disconnected");
-    // };
-
-    // Cleanup on component unmount
-    /*return () => {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.current.close();
-      }
-    };*/
   }, []); // Empty makes it run once
 
   const handleSubmit = (event: any) => {
