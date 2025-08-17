@@ -11,21 +11,56 @@ export default function MatchPage() {
 
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    socket.current = new WebSocket(`ws://localhost:3000/room`); // Connect to a room websocket
+  function connect(url: string) {
+    socket.current = new WebSocket(url);
 
-    // Set up event listeners
     socket.current.onopen = () => {
-      console.log("WebSocket connected");
+      console.log(`Connected to ${url}`);
     };
 
-    socket.current.onmessage = (event: any) => {
-      console.log("Message from server:", event.data);
+    socket.current.onmessage = (event: MessageEvent) => {
+      try {
+        const msg = JSON.parse(event.data) as {
+          action: string;
+          url?: string;
+        };
+
+        if (msg.action === "switch" && msg.url) {
+          console.log(`Switching to new socket: ${msg.url}`);
+          socket.current.close();
+          connect(msg.url); // reconnect to new socket
+        } else {
+          console.log("Message:", msg);
+        }
+      } catch (err) {
+        console.log("");
+      }
     };
 
     socket.current.onclose = () => {
-      console.log("WebSocket disconnected");
+      console.log(`Disconnected from ${url}`);
     };
+
+    socket.current.onerror = (err: Error) => {
+      console.error("Socket error:", err);
+    };
+  }
+  useEffect(() => {
+    connect(`ws://localhost:3000/room`);
+    // socket.current = new WebSocket(`ws://localhost:3000/room`); // Connect to a room websocket
+    //
+    // // Set up event listeners
+    // socket.current.onopen = () => {
+    //   console.log("WebSocket connected");
+    // };
+    //
+    // socket.current.onmessage = (event: any) => {
+    //   console.log("Message from server:", event.data);
+    // };
+    //
+    // socket.current.onclose = () => {
+    //   console.log("WebSocket disconnected");
+    // };
 
     // Cleanup on component unmount
     /*return () => {
@@ -56,4 +91,3 @@ export default function MatchPage() {
     </>
   );
 }
-
