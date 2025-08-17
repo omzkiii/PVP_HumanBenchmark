@@ -18,7 +18,6 @@ func Users(queries *database.Queries) {
 	http.HandleFunc("POST /signup", q.signupHandler)
 	http.HandleFunc("POST /login", q.loginHandler)
 	http.Handle("GET /users", tokenMiddleware(q.getUsersHandler))
-
 }
 
 // HANDLERS
