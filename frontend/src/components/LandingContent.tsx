@@ -28,7 +28,7 @@ export default function LandingPageContent() {
           <p> CHALLENGE OTHERS FOR THE TITLE OF ULTIMATE HUMAN </p>
         </div>
       </div>
-      <div className="Footer"> a</div>
+      <div className="Footer"> </div>
     </>
   );
 }
