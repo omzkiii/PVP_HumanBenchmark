@@ -24,7 +24,7 @@ func pop_room(rooms []room) room {
 }
 
 func transfer_client(clients map[*client]bool, rooms []room) {
-	url := uuid.NewString()
+	url := uuid.NewString() //Creates Empty URL STRING
 	path := fmt.Sprintf("ws://localhost:3000/%v", url)
 
 	new_room := pop_room(rooms)

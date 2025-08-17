@@ -1,12 +1,19 @@
 import { Link } from "react-router-dom";
 import Login from "./Login";
 
-function LoginModal({ onClose }: { onClose: () => void }) {
+
+
+interface LoginModalProps {
+  onClose: () => void;
+  onLoginSuccess?: () => void;
+}
+
+function LoginModal({ onClose, onLoginSuccess }: LoginModalProps ) {
   return (  
     <div className="modal">
       <div>
         <button onClick={onClose}>X</button>
-        <Login />
+        <Login onExit={onClose} onLoginSuccess={() => onLoginSuccess?.()}/>
 
       </div>
       

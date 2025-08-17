@@ -18,6 +18,7 @@ func Users(queries *database.Queries) {
 	http.HandleFunc("POST /signup", q.signupHandler)
 	http.HandleFunc("POST /login", q.loginHandler)
 	http.Handle("GET /users", tokenMiddleware(q.getUsersHandler))
+	http.Handle("GET /me", tokenMiddleware(q.meHandler))
 }
 
 // HANDLERS
@@ -37,16 +38,53 @@ func handleError(err error, w http.ResponseWriter) bool {
 	return false
 }
 
+// user Checkers
 func (q *db) getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	users, err := q.GetUsers(context.Background())
 	if handleError(err, w) {
 		return
 	}
 	data, err := json.Marshal(users)
+	if handleError(err, w) {
+		return
+	}
+
 	w.Header().Add("Content-type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(data))
 }
+
+func (q *db) meHandler(w http.ResponseWriter, r *http.Request) {
+	// TokenMiddleware Validation
+	reqToken, err := r.Cookie("token") // Look at request call and take token
+	fmt.Println(reqToken)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	claims, err := validateToken(reqToken.Value) // Take Token returns a specific Claims
+	if err != nil {
+		http.Error(w, "Invalid token", http.StatusUnauthorized)
+		return
+	}
+
+	user, err := q.GetAUser(context.Background(), claims.Subject) // Check user
+	if handleError(err, w) {
+		return
+	}
+
+	data, err := json.Marshal(user)
+	if handleError(err, w) {
+		return
+	}
+	
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(data))
+}
+
+//
+
 
 func (q *db) signupHandler(w http.ResponseWriter, r *http.Request) {
 	data := database.CreateUserParams{}
