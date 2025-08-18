@@ -4,7 +4,7 @@ import "../css/main.css";
 import SignupModal from "./Form Components/SignupModal";
 
 interface LandingProps {
-  isAuthenticated?: boolean;
+  isAuthenticated?: boolean | null;
   onSignupToggle: (state: boolean) => void;
 }
 
@@ -17,7 +17,7 @@ export default function LandingPageContent({ isAuthenticated, onSignupToggle }: 
       onSignupToggle(true);
     } else {
       // Navigate to matches if authenticated
-      navigate('/matches/123');
+      navigate('/matchmaking');
     }
   };
 

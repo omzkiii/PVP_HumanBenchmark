@@ -17,8 +17,10 @@ func Users(queries *database.Queries) {
 	}
 	http.HandleFunc("POST /signup", q.signupHandler)
 	http.HandleFunc("POST /login", q.loginHandler)
+	http.HandleFunc("POST /logout", q.logoutHandler)
 	http.Handle("GET /users", tokenMiddleware(q.getUsersHandler))
-	http.Handle("GET /me", tokenMiddleware(q.meHandler))
+	http.Handle("GET /me", tokenMiddleware(q.meHandler)) // Temp func For handling single user verification
+	
 }
 
 // HANDLERS
@@ -148,4 +150,26 @@ func (q *db) loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(data.Username))
+}
+
+
+
+// Loguout Handler
+func (q *db) logoutHandler(w http.ResponseWriter, r *http.Request) {
+	// Expire the cookie immediately
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0), // already expired
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   false, // set to true in production with HTTPS
+	})
+
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("logged out"))
+
+
 }

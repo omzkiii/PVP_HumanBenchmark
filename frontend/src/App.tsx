@@ -21,7 +21,7 @@ function fetchMessage(): Promise<string> {
 }
 
 
-async function CheckForAuth() {
+async function CheckForAuth(): Promise<boolean> {
   try {
 
     const userRes = await axios.get(url + "/me", {
@@ -41,7 +41,7 @@ async function CheckForAuth() {
 function App() {
   const [message, setMessage] = useState("Loading.....");
   const [isConnected, setConnectionState] = useState(false);
-  const [isValidationState, setisValidationState] = useState(false);
+  const [isValidationState, setisValidationState] = useState<boolean | null>(null);
 
   // Sign Up Logic
   
@@ -55,32 +55,85 @@ function App() {
 
 
   //Check Connection
+
+  const CheckConnection = () => {
+    console.log(isConnected);
+  }
+
+  //
+
+  //Sign Out Logic // Expiration 
+
+  const onSignoutFunction = async () => {
+    try {
+      console.log("pressed Signout")
+      const res = await axios.post(
+        url + "/logout", 
+        {},
+        { withCredentials: true }
+      );
+
+      if (res.data == "logged out") {
+        setisValidationState(false);
+      }
+
+
+    } catch (e : unknown) {
+      console.log(e)
+    }
+
+    return;
+  }
+
+
+
+  // maybe edit this in api instance
   useEffect(() => {
+    let mounted = true;
+  
     const checkConnection = async () => {
       try {
         const response = await axios.get(`${url}/health`);
+        if (!mounted) return;
         setMessage(response.data);
         setConnectionState(true);
-
-        setisValidationState(await CheckForAuth());
-        console.log("Setting validation state to:", isValidationState);
-
       } catch (err) {
+        if (!mounted) return;
         setMessage("Failed to connect to backend " + err);
         setConnectionState(false);
       }
+  
+      // Auth check (must include credentials so cookie is sent)
+      try {
+        const userRes = await axios.get(url + "/me", { withCredentials: true });
+        if (!mounted) return;
+        console.log("User validated:", userRes.data);
+        setisValidationState(true);
+      } catch (e) {
+        if (!mounted) return;
+        console.log("Auth failed:", e);
+        setisValidationState(false);
+      }
     };
-
+  
     checkConnection();
-  }, []);
+  
+    return () => {
+      mounted = false;
+    };
+  }, []); // run once on mount
+  
 
   return (
     <>
       <Navigation 
       isValidated={isValidationState} 
-      onAuthChange={setisValidationState} 
+      onAuthChange={setisValidationState}
+      // ================
       isSignupOpen={isSignupOpen}
       onSignupToggle={toggleSignupModal}
+      // ================
+      onSignoutToggle={onSignoutFunction}
       />
       <LandingPageContent
         isAuthenticated={isValidationState}

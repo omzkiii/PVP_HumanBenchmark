@@ -10,7 +10,9 @@ export default function MatchPage() {
   const socket: any = useRef(null);
 
   const [message, setMessage] = useState("");
+  
 
+  //Connect to go lang websocket base
   function connect(url: string) {
     socket.current = new WebSocket(url);
 

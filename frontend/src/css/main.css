@@ -75,7 +75,7 @@ a {
 }
 
 /*Hover animation*/
-.Nav ul li:not(:nth-child(3)):hover {
+.Nav ul li:not(:nth-child(2)):hover {
     color: var(--main-clr);
     transform: scale(1.1);
     animation: fade-in 0.1s ease-in-out forwards;
@@ -149,7 +149,7 @@ a {
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
-    animation: flow 10s infinite cubic-bezier(0.4, 0, 0.2, 1) alternate-reverse;
+    animation: flow 50s infinite cubic-bezier(0.4, 0, 0.2, 1) alternate-reverse;
 }
 
 .noise-text:hover {
