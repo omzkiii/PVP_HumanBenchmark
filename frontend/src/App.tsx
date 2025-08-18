@@ -1,91 +1,62 @@
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import "./App.css";
-import Signup from "./components/Form Components/Signup";
 import Navigation from "./components/Navigation";
 import LandingPageContent from "./components/LandingContent";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
+import { IsAuthorized } from "./API/AuthHelper";
 
 const url = import.meta.env.VITE_API_BASE_URL;
+// console.log(isAuthenticated);
 
-function fetchMessage(): Promise<string> {
-  return axios
-    .get<string>(url)
-    .then((res) => {
-      return res.data;
-    })
-    .catch((err) => {
-      return `Error ${err}`;
-    });
-}
-
-
-async function CheckForAuth(): Promise<boolean> {
-  try {
-
-    const userRes = await axios.get(url + "/me", {
-      withCredentials: true,
-    })
-    console.log("User Validated: ", userRes.data);
-    
-    return true
-    
-  } catch(e : unknown) {
-    console.log("Failed", e);
-
-    return false // Should have a popup checker or something
-  }
-}
+// function fetchMessage(): Promise<string> {
+//   return axios
+//     .get<string>(url)
+//     .then((res) => {
+//       return res.data;
+//     })
+//     .catch((err) => {
+//       return `Error ${err}`;
+//     });
+// }
 
 function App() {
-  const [message, setMessage] = useState("Loading.....");
-  const [isConnected, setConnectionState] = useState(false);
-  const [isValidationState, setisValidationState] = useState<boolean | null>(null);
+  const auth = useContext(IsAuthorized); //GLOBAL AUTH STATE
+  if (!auth) throw new Error("IsAuthorized must be used within AuthHelper");
+  const [isAuthorized, setIsAuthorized] = auth;
+
+  const [isValidationState, setisValidationState] = useState<boolean | null>(
+    null,
+  );
 
   // Sign Up Logic
-  
+
   const [isSignupOpen, setIsSignupOpen] = useState(false); // Shared Modal State
- 
+
   const toggleSignupModal = (state: boolean) => {
     setIsSignupOpen(state);
   };
 
-  // 
-
-
-  //Check Connection
-
-  const CheckConnection = () => {
-    console.log(isConnected);
-  }
-
-  //
-
-  //Sign Out Logic // Expiration 
+  //Sign Out Logic // Expiration
 
   const onSignoutFunction = async () => {
     try {
-      console.log("pressed Signout")
+      console.log("pressed Signout");
       const res = await axios.post(
-        url + "/logout", 
+        url + "/logout",
         {},
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (res.data == "logged out") {
         setisValidationState(false);
       }
-
-
-    } catch (e : unknown) {
-      console.log(e)
+    } catch (e: unknown) {
+      console.log(e);
     }
 
     return;
-  }
-
+  };
 
   // Transition
   const [pageState, setPageState] = useState(false);
@@ -93,77 +64,36 @@ function App() {
 
   const handleTransition = (length: number) => {
     setPageState(true);
-    
+
     const navigateTimer = setTimeout(() => {
-      navigate('/matchmaking');
-    }, length * 0.8); 
+      navigate("/matchmaking");
+    }, length * 0.8);
 
     const hideTimer = setTimeout(() => {
       setPageState(false);
     }, length);
-  
+
     return () => {
       clearTimeout(navigateTimer);
       clearTimeout(hideTimer);
     };
-  }
-
-
-  // maybe edit this in api instance
-  useEffect(() => {
-    let mounted = true;
-  
-    const checkConnection = async () => {
-      try {
-        const response = await axios.get(`${url}/health`);
-        if (!mounted) return;
-        setMessage(response.data);
-        setConnectionState(true);
-      } catch (err) {
-        if (!mounted) return;
-        setMessage("Failed to connect to backend " + err);
-        setConnectionState(false);
-      }
-  
-      // Auth check (must include credentials so cookie is sent)
-      try {
-        const userRes = await axios.get(url + "/me", { withCredentials: true });
-        if (!mounted) return;
-        console.log("User validated:", userRes.data);
-        setisValidationState(true);
-      } catch (e) {
-        if (!mounted) return;
-        console.log("Auth failed:", e);
-        setisValidationState(false);
-      }
-    };
-  
-    checkConnection();
-  
-    return () => {
-      mounted = false;
-    };
-  }, []); // run once on mount
-  
-
+  };
   return (
     <>
-      <div className={`transition ${pageState ? `transition-activate` : ``}`}> </div>
-
-      <Navigation 
-      isValidated={isValidationState} 
-      onAuthChange={setisValidationState}
-      // ================
-      isSignupOpen={isSignupOpen}
-      onSignupToggle={toggleSignupModal}
-      // ================
-      onSignoutToggle={onSignoutFunction}
+      <div className={`transition ${pageState ? `transition-activate` : ``}`}>
+        {" "}
+      </div>
+      <Navigation
+        // ================
+        isSignupOpen={isSignupOpen}
+        onSignupToggle={toggleSignupModal}
+        // ================
+        onSignoutToggle={onSignoutFunction}
       />
       <LandingPageContent
-        isAuthenticated={isValidationState}
         onSignupToggle={toggleSignupModal}
         onTransitionHandle={handleTransition}
-        
+
         // ================
       />
     </>
