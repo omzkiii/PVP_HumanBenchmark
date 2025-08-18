@@ -1,13 +1,21 @@
-import axios from "axios";
+import axios, { HttpStatusCode } from "axios";
 import { useNavigate } from "react-router-dom";
-import { useState, type ChangeEvent } from "react";
+import { useContext, useState, type ChangeEvent } from "react";
+import { IsAuthorized } from "../../API/AuthHelper";
 const url = import.meta.env.VITE_API_BASE_URL;
 type SignupForm = {
   username: string;
   password: string;
 };
 
-export default function Signup() {
+interface SignupProps {
+  onExit: () => void;
+}
+export default function Signup({ onExit }: SignupProps) {
+  const auth = useContext(IsAuthorized); //GLOBAL AUTH STATE
+  if (!auth) throw new Error("IsAuthorized must be used within AuthHelper");
+  const [isAuthorized, setIsAuthorized] = auth;
+
   let navigate = useNavigate();
   const [form, setForm] = useState<SignupForm>({
     username: "",
@@ -25,9 +33,23 @@ export default function Signup() {
   };
 
   function handleSubmit() {
-    axios.post(url + "/signup", form).then((res) => {
-      setSuccess(res.data);
-    });
+    const signup = async () => {
+      const status = await axios.post(url + "/signup", form).then((res) => {
+        setSuccess(res.data);
+        return res;
+      });
+      if (status.status === HttpStatusCode.Ok) {
+        setIsAuthorized(true);
+        onExit();
+      } else {
+        setIsAuthorized(false);
+      }
+    };
+    try {
+      signup();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
