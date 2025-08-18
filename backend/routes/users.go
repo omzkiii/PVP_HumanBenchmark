@@ -19,8 +19,8 @@ func Users(queries *database.Queries) {
 	http.HandleFunc("POST /login", q.loginHandler)
 	http.HandleFunc("POST /logout", q.logoutHandler)
 	http.Handle("GET /users", tokenMiddleware(q.getUsersHandler))
+	http.Handle("GET /auth", tokenMiddleware(authHandler))
 	http.Handle("GET /me", tokenMiddleware(q.meHandler)) // Temp func For handling single user verification
-	
 }
 
 // HANDLERS
@@ -80,13 +80,16 @@ func (q *db) meHandler(w http.ResponseWriter, r *http.Request) {
 	if handleError(err, w) {
 		return
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(data))
 }
 
-//
-
+func authHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte("authenticated"))
+}
 
 func (q *db) signupHandler(w http.ResponseWriter, r *http.Request) {
 	data := database.CreateUserParams{}
@@ -152,8 +155,6 @@ func (q *db) loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(data.Username))
 }
 
-
-
 // Loguout Handler
 func (q *db) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	// Expire the cookie immediately
@@ -167,9 +168,7 @@ func (q *db) logoutHandler(w http.ResponseWriter, r *http.Request) {
 		Secure:   false, // set to true in production with HTTPS
 	})
 
-
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("logged out"))
-
-
 }
+
