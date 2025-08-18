@@ -17,4 +17,3 @@ function LoginModal({ onClose, onLoginSuccess }: LoginModalProps) {
 }
 
 export default LoginModal;
-

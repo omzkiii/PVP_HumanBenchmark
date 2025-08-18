@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useState, type ChangeEvent } from "react";
+import { useContext, useState, type ChangeEvent } from "react";
+import { IsAuthorized } from "../../API/AuthHelper";
 const url = import.meta.env.VITE_API_BASE_URL;
 type LoginForm = {
   username: string;
@@ -12,6 +13,10 @@ interface LoginProps {
 }
 
 export default function Login({ onExit, onLoginSuccess }: LoginProps) {
+  const auth = useContext(IsAuthorized); //GLOBAL AUTH STATE
+  if (!auth) throw new Error("IsAuthorized must be used within AuthHelper");
+  const [isAuthorized, setIsAuthorized] = auth;
+
   const [form, setForm] = useState<LoginForm>({
     username: "",
     password: "",
@@ -38,6 +43,7 @@ export default function Login({ onExit, onLoginSuccess }: LoginProps) {
       });
       if (userRes.status === 200) {
         onLoginSuccess?.();
+        setIsAuthorized(true);
       }
       console.log("User Validated: ", userRes.data);
     } catch (e: unknown) {
