@@ -5,6 +5,7 @@ import Signup from "./components/Form Components/Signup";
 import Navigation from "./components/Navigation";
 import LandingPageContent from "./components/LandingContent";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 const url = import.meta.env.VITE_API_BASE_URL;
@@ -21,7 +22,7 @@ function fetchMessage(): Promise<string> {
 }
 
 
-async function CheckForAuth() {
+async function CheckForAuth(): Promise<boolean> {
   try {
 
     const userRes = await axios.get(url + "/me", {
@@ -41,7 +42,7 @@ async function CheckForAuth() {
 function App() {
   const [message, setMessage] = useState("Loading.....");
   const [isConnected, setConnectionState] = useState(false);
-  const [isValidationState, setisValidationState] = useState(false);
+  const [isValidationState, setisValidationState] = useState<boolean | null>(null);
 
   // Sign Up Logic
   
@@ -55,36 +56,115 @@ function App() {
 
 
   //Check Connection
+
+  const CheckConnection = () => {
+    console.log(isConnected);
+  }
+
+  //
+
+  //Sign Out Logic // Expiration 
+
+  const onSignoutFunction = async () => {
+    try {
+      console.log("pressed Signout")
+      const res = await axios.post(
+        url + "/logout", 
+        {},
+        { withCredentials: true }
+      );
+
+      if (res.data == "logged out") {
+        setisValidationState(false);
+      }
+
+
+    } catch (e : unknown) {
+      console.log(e)
+    }
+
+    return;
+  }
+
+
+  // Transition
+  const [pageState, setPageState] = useState(false);
+  const navigate = useNavigate();
+
+  const handleTransition = (length: number) => {
+    setPageState(true);
+    
+    const navigateTimer = setTimeout(() => {
+      navigate('/matchmaking');
+    }, length * 0.8); 
+
+    const hideTimer = setTimeout(() => {
+      setPageState(false);
+    }, length);
+  
+    return () => {
+      clearTimeout(navigateTimer);
+      clearTimeout(hideTimer);
+    };
+  }
+
+
+  // maybe edit this in api instance
   useEffect(() => {
+    let mounted = true;
+  
     const checkConnection = async () => {
       try {
         const response = await axios.get(`${url}/health`);
+        if (!mounted) return;
         setMessage(response.data);
         setConnectionState(true);
-
-        setisValidationState(await CheckForAuth());
-        console.log("Setting validation state to:", isValidationState);
-
       } catch (err) {
+        if (!mounted) return;
         setMessage("Failed to connect to backend " + err);
         setConnectionState(false);
       }
+  
+      // Auth check (must include credentials so cookie is sent)
+      try {
+        const userRes = await axios.get(url + "/me", { withCredentials: true });
+        if (!mounted) return;
+        console.log("User validated:", userRes.data);
+        setisValidationState(true);
+      } catch (e) {
+        if (!mounted) return;
+        console.log("Auth failed:", e);
+        setisValidationState(false);
+      }
     };
-
+  
     checkConnection();
-  }, []);
+  
+    return () => {
+      mounted = false;
+    };
+  }, []); // run once on mount
+  
 
   return (
     <>
+      <div className={`transition ${pageState ? `transition-activate` : ``}`}> </div>
+
       <Navigation 
       isValidated={isValidationState} 
-      onAuthChange={setisValidationState} 
+      onAuthChange={setisValidationState}
+      // ================
       isSignupOpen={isSignupOpen}
       onSignupToggle={toggleSignupModal}
+      // ================
+      onSignoutToggle={onSignoutFunction}
       />
       <LandingPageContent
         isAuthenticated={isValidationState}
         onSignupToggle={toggleSignupModal}
+        onTransitionHandle={handleTransition}
+        
+        // ================
       />
     </>
   );

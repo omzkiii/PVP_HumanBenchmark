@@ -75,7 +75,7 @@ a {
 }
 
 /*Hover animation*/
-.Nav ul li:not(:nth-child(3)):hover {
+.Nav ul li:not(:nth-child(2)):hover {
     color: var(--main-clr);
     transform: scale(1.1);
     animation: fade-in 0.1s ease-in-out forwards;
@@ -149,7 +149,7 @@ a {
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
-    animation: flow 10s infinite cubic-bezier(0.4, 0, 0.2, 1) alternate-reverse;
+    animation: flow 50s infinite cubic-bezier(0.4, 0, 0.2, 1) alternate-reverse;
 }
 
 .noise-text:hover {
@@ -269,6 +269,35 @@ a {
     width: 100vw;
     height: 30.1vh;
 }
+
+
+/*Transition*/
+.transition {
+    background-color: var(--dark-clr);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    z-index: 999;
+    transform: translateY(100vh);
+
+}
+
+.transition-activate {
+    animation: transPage 3s cubic-bezier(0.19, 1, 0.22, 1) forwards
+}
+
+@keyframes transPage {
+    0% {
+        transform: translateY(100vh);
+    }
+    25% {
+        transform: translateY(60vh);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
 
 .text-with-inset-shadow h1 {
   font-size: 4rem;

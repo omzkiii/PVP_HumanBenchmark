@@ -6,17 +6,19 @@ import LoginModal from "./Form Components/LoginModal";
 import SignupModal from "./Form Components/SignupModal";
 
 interface NavigationProps {
-    isValidated: boolean;
+    isValidated: boolean | null;
     onAuthChange?: (v: boolean) => void;
     isSignupOpen?: boolean;
     onSignupToggle?: (state: boolean) => void;
+    onSignoutToggle?: () => void;
 }
 
 export default function Navigation({ 
     isValidated, 
     onAuthChange, 
     isSignupOpen, 
-    onSignupToggle 
+    onSignupToggle,
+    onSignoutToggle
 }: NavigationProps) {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
 
@@ -24,23 +26,34 @@ export default function Navigation({
         setIsLoginOpen(false);
     };
 
-    const handleSignupClose = () => {
+    const handleSignupClose = () => { 
         onSignupToggle?.(false);
     };
+
+   
+
 
     return (
         <>
             <div className="Nav">
                 <ul>
                     <li><Link to="/battles">BATTLES</Link></li>
-                    <li><Link to="/profile/test">PROFILE</Link></li>
                     <li className="title"><a href="/">BB<span>LE</span></a></li>
 
-                    {!isValidated && (
-                        <>
-                            <li onClick={() => onSignupToggle?.(true)}>SIGN UP</li>
-                            <li onClick={() => setIsLoginOpen(true)}>LOG IN</li>
-                        </>
+                    {isValidated === null ? (
+                    <>
+                        
+                    </>
+                    ) : isValidated === false ? (
+                    <>
+                        <li onClick={() => onSignupToggle?.(true)}>SIGN UP</li>
+                        <li onClick={() => setIsLoginOpen(true)}>LOG IN</li>
+                    </>
+                    ) : (
+                    <>
+                        <li onClick={() => onSignoutToggle?.()}>SIGN OUT</li>
+                        <li><Link to="/profile/test">PROFILE</Link></li>
+                    </>
                     )}
                 </ul>
             </div>
