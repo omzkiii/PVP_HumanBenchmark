@@ -16,7 +16,7 @@ import AuthHelper from "./API/AuthHelper.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AuthHelper children={undefined} />,
+    element: <AuthHelper />,
     children: [
       {
         path: "/",
