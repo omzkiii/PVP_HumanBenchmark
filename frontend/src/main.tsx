@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -11,6 +10,7 @@ import QueuePage from "./pages/Queue/Queue.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import ProfilePage from "./pages/Profile/Profile.tsx";
 import BattlesPage from "./pages/Battles/Battles.tsx";
+import AuthHelper from "./API/AuthHelper.tsx";
 
 //React Router Definition
 const router = createBrowserRouter([
@@ -38,5 +38,7 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <RouterProvider router={router} />,
+  <AuthHelper>
+    <RouterProvider router={router} />,
+  </AuthHelper>,
 );

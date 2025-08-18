@@ -27,27 +27,24 @@ export default function Login({ onExit, onLoginSuccess }: LoginProps) {
     try {
       const res = await axios.post(url + "/login", form, {
         withCredentials: true, //it tells axios  to include cookies from your browser when making cross-origin requests.
-      }) // call login 
-  
+      }); // call login
+
       setSuccess(res.data);
 
       //Test user validation
       //Confirm /me
       const userRes = await axios.get(url + "/me", {
         withCredentials: true,
-      })
+      });
       if (userRes.status === 200) {
-        onLoginSuccess?.();   
+        onLoginSuccess?.();
       }
       console.log("User Validated: ", userRes.data);
-      
-      
-    } catch(e : unknown) {
+    } catch (e: unknown) {
       console.log("Failed", e);
     }
 
-    onExit() //
-    
+    onExit(); //
   }
   return (
     <div>

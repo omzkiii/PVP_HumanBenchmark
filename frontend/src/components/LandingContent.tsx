@@ -1,19 +1,22 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
 import "../css/main.css";
-import SignupModal from "./Form Components/SignupModal";
+import { IsAuthorized } from "../API/AuthHelper";
 
 interface LandingProps {
-  isAuthenticated?: boolean | null;
   onSignupToggle: (state: boolean) => void;
   onTransitionHandle?: (length: number) => {};
 }
 
-export default function LandingPageContent({ isAuthenticated, onSignupToggle, onTransitionHandle }: LandingProps) {
-  const navigate = useNavigate();
+export default function LandingPageContent({
+  onSignupToggle,
+  onTransitionHandle,
+}: LandingProps) {
+  const auth = useContext(IsAuthorized); //GLOBAL AUTH STATE
+  if (!auth) throw new Error("IsAuthorized must be used within AuthHelper");
+  const [isAuthorized, setIsAuthorized] = auth;
 
-  const handleMatchClick = () => { 
-    if (!isAuthenticated) {
+  const handleMatchClick = () => {
+    if (!isAuthorized) {
       // Show signup modal if not authenticated
       onSignupToggle(true);
     } else {
@@ -35,8 +38,8 @@ export default function LandingPageContent({ isAuthenticated, onSignupToggle, on
           </div>
         </div>
         <div>
-          <button 
-            id="MM-btn" 
+          <button
+            id="MM-btn"
             onClick={handleMatchClick}
             aria-label="Find a match"
           >
@@ -45,7 +48,8 @@ export default function LandingPageContent({ isAuthenticated, onSignupToggle, on
           <p>CHALLENGE OTHERS FOR THE TITLE OF ULTIMATE HUMAN</p>
         </div>
       </div>
-      <div className="Footer"></div>
+      <div className="Footer"></div>{" "}
     </>
   );
 }
+
