@@ -59,9 +59,276 @@ export default function QueuePage() {
 
   return (
     <>
-      <div className="QueuePage"> 
-        <h1>  L O A D I N G </h1>
+      <div className="QueuePage">
+   
+        <h1> <span> L </span> <span> O </span> <span> A </span> <span> D </span> <span> I </span><span> N </span> <span> G </span>  </h1>
+        <div className="Wave">
+          <ul>
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
       </div>
+      
+
+
+
     </>
   );
 }

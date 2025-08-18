@@ -13,17 +13,151 @@ body, html {
     overflow-x: hidden;
 }
 
-.QueuePage {
-    display: flex;
-    justify-content: center; /* horizontal center */
-    align-items: center;     /* vertical center */
-    padding: 0;
-    margin: 0;
-    background-color: var(--dark-clr);
-    width: 100vw;
-    height: 100vh;
-}
 
+/*Load Text*/
 .QueuePage h1 {
     color: white;
 }
+
+.QueuePage h1 span {
+    animation: loadtext 1s cubic-bezier(0.4,0,0.2,1) infinite;
+}
+
+.QueuePage h1 span:nth-child(1) { animation-delay: 0.1s;}
+.QueuePage h1 span:nth-child(2) { animation-delay: 0.2s;}
+.QueuePage h1 span:nth-child(3) { animation-delay: 0.3s;}
+.QueuePage h1 span:nth-child(4) { animation-delay: 0.4s;}
+.QueuePage h1 span:nth-child(5) { animation-delay: 0.5s;}
+.QueuePage h1 span:nth-child(6) { animation-delay: 0.6s;}
+.QueuePage h1 span:nth-child(7) { animation-delay: 0.7s;}
+
+@keyframes loadtext {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.2;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Wave */
+.QueuePage {
+  display: flex;
+  flex-direction: column;   /* stack waves vertically */
+  justify-content: center;
+  align-items: center;
+  background: var(--dark-clr);
+  width: 100vw;
+  height: 100vh;
+  perspective: 800px;
+  transform-style: preserve-3d;
+
+}
+
+.Wave {
+  display: inline-block;
+  transform-style: preserve-3d;
+  animation: LOWTAPER 12s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+
+@keyframes LOWTAPER {
+    0% { opacity: 0; } /* tiny upward motion looks nice */
+    100%   { opacity: 1; }
+  }
+
+.Wave:nth-of-type(1) {
+  transform: translate3d(0,  100px, 50px) rotate3d(0, 1, 0, -60deg); /* pushed back in space */
+}
+
+.Wave:nth-of-type(2) {
+  transform: translate3d(-100px, 100px, 50px) rotate3d(0, 1, 0, -60deg);   /* pulled forward in space */
+}
+
+.Wave:nth-of-type(3) {
+  transform: translate3d(-200px,  100px, 50px) rotate3d(0, 1, 0, -60deg);   /* pulled forward in space */
+}
+
+.Wave:nth-of-type(4) {
+  transform: translate3d(-300px,  100px, 50px) rotate3d(0, 1, 0, -60deg);   /* pulled forward in space */
+}
+
+.Wave:nth-of-type(5) {
+  transform: translate3d(-400px,  100px, 50px) rotate3d(0, 1, 0, -60deg);   /* pulled forward in space */
+}
+
+.Wave:nth-of-type(6) {
+  transform: translate3d(-500px,  100px, 50px) rotate3d(0, 1, 0, -60deg);   /* pulled forward in space */
+}
+
+.Wave:nth-of-type(7) {
+  transform: translate3d(-600px,  100px, 50px) rotate3d(0, 1, 0, -60deg);   /* pulled forward in space */
+}
+
+.Wave:nth-of-type(8) {
+  transform: translate3d(-700px,  100px, 50px) rotate3d(0, 1, 0, -60deg);   /* pulled forward in space */
+}
+
+.Wave:nth-of-type(9) {
+  transform: translate3d(100px,  -100px, 50px) rotate3d(0, 1, 0, -60deg);   /* pulled forward in space */
+}
+
+
+.Wave ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 30px;
+   transform-style: preserve-3d;
+
+}
+
+.Wave ul li {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff, #aaa, #333);
+  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.5),
+              inset  2px  2px 6px rgba(0,0,0,0.6),
+              0 2px 6px rgba(0,0,0,0.4);
+  animation: Wave 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transform-style: preserve-3d;
+  transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 80deg) scale(.5); opacity: 1;
+
+}
+
+.Wave ul li:nth-child(1) { animation-delay: 0s; }
+.Wave ul li:nth-child(2) { animation-delay: 0.1s; }
+.Wave ul li:nth-child(3) { animation-delay: 0.2s; }
+.Wave ul li:nth-child(4) { animation-delay: 0.3s; }
+.Wave ul li:nth-child(5) { animation-delay: 0.4s; }
+.Wave ul li:nth-child(6) { animation-delay: 0.5s; }
+.Wave ul li:nth-child(7) { animation-delay: 0.6s; }
+.Wave ul li:nth-child(8) { animation-delay: 0.7s; }
+.Wave ul li:nth-child(9) { animation-delay: 0.8s; }
+.Wave ul li:nth-child(10) { animation-delay: 0.9s; }
+.Wave ul li:nth-child(11) { animation-delay: 1s; }
+.Wave ul li:nth-child(12) { animation-delay: 1.1s; }
+.Wave ul li:nth-child(13) { animation-delay: 1.2s; }
+.Wave ul li:nth-child(14) { animation-delay: 1.3s; }
+.Wave ul li:nth-child(15) { animation-delay: 1.4s; }
+.Wave ul li:nth-child(16) { animation-delay: 1.5s; }
+.Wave ul li:nth-child(17) { animation-delay: 1.6s; }
+.Wave ul li:nth-child(18) { animation-delay: 1.7s; }
+.Wave ul li:nth-child(19) { animation-delay: 1.8s; }
+.Wave ul li:nth-child(20) { animation-delay: 1.9s; }
+.Wave ul li:nth-child(21) { animation-delay: 2s; }
+.Wave ul li:nth-child(22) { animation-delay: 2.1s; }
+.Wave ul li:nth-child(23) { animation-delay: 2.2s; }
+.Wave ul li:nth-child(24) { animation-delay: 2.3s; }
+.Wave ul li:nth-child(25) { animation-delay: 2.4s; }
+
+@keyframes Wave {
+  0%   { transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 80deg) scale(.5); opacity: 1; }
+  50%  { transform: translate3d(0, 100px, 0) rotate3d(0, 1, 0, 80deg) scale(0.2); opacity: 0.2; }
+  100% { transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 80deg) scale(.5); opacity: 1; }
+}
+
