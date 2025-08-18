@@ -7,7 +7,7 @@ const url = import.meta.env.VITE_API_BASE_URL;
 export default function MatchPage() {
   const params = useParams(); // For handeling queue ticket id
 
-  const socket: any = useRef(null);
+  const socket = useRef<WebSocket>(null);
 
   const [message, setMessage] = useState("");
   
@@ -32,7 +32,7 @@ export default function MatchPage() {
 
         if (msg.action === "switch" && msg.url) {
           console.log(`Switching to new socket: ${msg.url}`);
-          socket.current.close();
+          socket.current?.close();
           connect(msg.url);
         } else {
           console.log("Message:", msg);
@@ -46,15 +46,15 @@ export default function MatchPage() {
       console.log(`Disconnected from ${url}`);
     };
 
-    socket.current.onerror = (err: Error) => {
-      console.error("Socket error:", err);
+    socket.current.onerror = (event: Event) => {
+      console.error("Socket error:", event);
     };
   }
   useEffect(() => {
     connect(`ws://localhost:3000/room`);
   }, []); // Empty makes it run once
 
-  const handleSubmit = (event: any) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (socket.current && socket.current.readyState === WebSocket.OPEN) {
       socket.current.send(message);

@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useState, type ChangeEvent } from "react";
+import { useContext, useState, type ChangeEvent } from "react";
+import { IsAuthorized } from "../../API/AuthHelper";
 const url = import.meta.env.VITE_API_BASE_URL;
 type LoginForm = {
   username: string;
@@ -12,6 +13,10 @@ interface LoginProps {
 }
 
 export default function Login({ onExit, onLoginSuccess }: LoginProps) {
+  const auth = useContext(IsAuthorized); //GLOBAL AUTH STATE
+  if (!auth) throw new Error("IsAuthorized must be used within AuthHelper");
+  const [isAuthorized, setIsAuthorized] = auth;
+
   const [form, setForm] = useState<LoginForm>({
     username: "",
     password: "",
@@ -27,27 +32,25 @@ export default function Login({ onExit, onLoginSuccess }: LoginProps) {
     try {
       const res = await axios.post(url + "/login", form, {
         withCredentials: true, //it tells axios  to include cookies from your browser when making cross-origin requests.
-      }) // call login 
-  
+      }); // call login
+
       setSuccess(res.data);
 
       //Test user validation
       //Confirm /me
       const userRes = await axios.get(url + "/me", {
         withCredentials: true,
-      })
+      });
       if (userRes.status === 200) {
-        onLoginSuccess?.();   
+        onLoginSuccess?.();
+        setIsAuthorized(true);
       }
       console.log("User Validated: ", userRes.data);
-      
-      
-    } catch(e : unknown) {
+    } catch (e: unknown) {
       console.log("Failed", e);
     }
 
-    onExit() //
-    
+    onExit(); //
   }
   return (
     <div>
