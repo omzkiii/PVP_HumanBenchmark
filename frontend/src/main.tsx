@@ -16,29 +16,33 @@ import AuthHelper from "./API/AuthHelper.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
-    errorElement: <NotFoundPage />,
-  },
-  {
-    path: "/matchmaking", // For in loading state { Matchmaking Load and Draft }
-    element: <QueuePage />,
-  },
-  {
-    path: "/matches/:id", // for active match instances
-    element: <MatchPage />,
-  },
-  {
-    path: "/profile/:username",
-    element: <ProfilePage />,
-  },
-  {
-    path: "/battles",
-    element: <BattlesPage />,
+    element: <AuthHelper children={undefined} />,
+    children: [
+      {
+        path: "/",
+        element: <App />,
+        errorElement: <NotFoundPage />,
+      },
+      {
+        path: "/matchmaking", // For in loading state { Matchmaking Load and Draft }
+        element: <QueuePage />,
+      },
+      {
+        path: "/matches/:id", // for active match instances
+        element: <MatchPage />,
+      },
+      {
+        path: "/profile/:username",
+        element: <ProfilePage />,
+      },
+      {
+        path: "/battles",
+        element: <BattlesPage />,
+      },
+    ],
   },
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <AuthHelper>
-    <RouterProvider router={router} />,
-  </AuthHelper>,
+  <RouterProvider router={router} />,
 );
