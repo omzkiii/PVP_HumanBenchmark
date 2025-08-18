@@ -43,6 +43,17 @@ function App() {
   const [isConnected, setConnectionState] = useState(false);
   const [isValidationState, setisValidationState] = useState(false);
 
+  // Sign Up Logic
+  
+  const [isSignupOpen, setIsSignupOpen] = useState(false); // Shared Modal State
+ 
+  const toggleSignupModal = (state: boolean) => {
+    setIsSignupOpen(state);
+  };
+
+  // 
+
+
   //Check Connection
   useEffect(() => {
     const checkConnection = async () => {
@@ -65,10 +76,20 @@ function App() {
 
   return (
     <>
-      <Navigation isValidated={isValidationState} onAuthChange={setisValidationState} />
-      <LandingPageContent />
+      <Navigation 
+      isValidated={isValidationState} 
+      onAuthChange={setisValidationState} 
+      isSignupOpen={isSignupOpen}
+      onSignupToggle={toggleSignupModal}
+      />
+      <LandingPageContent
+        isAuthenticated={isValidationState}
+        onSignupToggle={toggleSignupModal}
+      />
     </>
   );
 }
+
+//need to pass state inbetween nav and land
 
 export default App;

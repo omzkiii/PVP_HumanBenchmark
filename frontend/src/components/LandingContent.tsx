@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/main.css";
+import SignupModal from "./Form Components/SignupModal";
 
-export default function LandingPageContent() {
-  let navigate = useNavigate();
-  const routeChange = (id: number) => {
-    navigate(`/matches/${id}`);
+interface LandingProps {
+  isAuthenticated?: boolean;
+  onSignupToggle: (state: boolean) => void;
+}
+
+export default function LandingPageContent({ isAuthenticated, onSignupToggle }: LandingProps) {
+  const navigate = useNavigate();
+
+  const handleMatchClick = () => { 
+    if (!isAuthenticated) {
+      // Show signup modal if not authenticated
+      onSignupToggle(true);
+    } else {
+      // Navigate to matches if authenticated
+      navigate('/matches/123');
+    }
   };
 
   return (
@@ -13,7 +26,7 @@ export default function LandingPageContent() {
       <div className="LandingPage">
         <div>
           <img className="crown" src="/images/crown.svg" alt="Logo" />
-          <h1 className="noise-text"> BENCHMARK </h1>
+          <h1 className="noise-text">BENCHMARK</h1>
           <div className="battles-container">
             <div className="battle-square left-square"></div>
             <h1 className="battles-yellow">BATTLES</h1>
@@ -21,14 +34,17 @@ export default function LandingPageContent() {
           </div>
         </div>
         <div>
-          <button id="MM-btn" onClick={() => routeChange(123)}>
-            {" "}
-            LOOK FOR A MATCH{" "}
+          <button 
+            id="MM-btn" 
+            onClick={handleMatchClick}
+            aria-label="Find a match"
+          >
+            LOOK FOR A MATCH
           </button>
-          <p> CHALLENGE OTHERS FOR THE TITLE OF ULTIMATE HUMAN </p>
+          <p>CHALLENGE OTHERS FOR THE TITLE OF ULTIMATE HUMAN</p>
         </div>
       </div>
-      <div className="Footer"> </div>
+      <div className="Footer"></div>
     </>
   );
 }
