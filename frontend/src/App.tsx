@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import axios from "axios";
+import axios, { HttpStatusCode } from "axios";
 import "./App.css";
 import Navigation from "./components/Navigation";
 import LandingPageContent from "./components/LandingContent";
@@ -7,27 +7,11 @@ import { useNavigate } from "react-router-dom";
 import { IsAuthorized } from "./API/AuthHelper";
 
 const url = import.meta.env.VITE_API_BASE_URL;
-// console.log(isAuthenticated);
-
-// function fetchMessage(): Promise<string> {
-//   return axios
-//     .get<string>(url)
-//     .then((res) => {
-//       return res.data;
-//     })
-//     .catch((err) => {
-//       return `Error ${err}`;
-//     });
-// }
 
 function App() {
   const auth = useContext(IsAuthorized); //GLOBAL AUTH STATE
   if (!auth) throw new Error("IsAuthorized must be used within AuthHelper");
   const [isAuthorized, setIsAuthorized] = auth;
-
-  const [isValidationState, setisValidationState] = useState<boolean | null>(
-    null,
-  );
 
   // Sign Up Logic
 
@@ -48,8 +32,8 @@ function App() {
         { withCredentials: true },
       );
 
-      if (res.data == "logged out") {
-        setisValidationState(false);
+      if (res.status == HttpStatusCode.Ok) {
+        setIsAuthorized(false);
       }
     } catch (e: unknown) {
       console.log(e);
@@ -87,14 +71,11 @@ function App() {
         // ================
         isSignupOpen={isSignupOpen}
         onSignupToggle={toggleSignupModal}
-        // ================
         onSignoutToggle={onSignoutFunction}
       />
       <LandingPageContent
         onSignupToggle={toggleSignupModal}
         onTransitionHandle={handleTransition}
-
-        // ================
       />
     </>
   );
