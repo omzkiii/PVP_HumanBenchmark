@@ -33,7 +33,6 @@ export default function Navigation({
   return (
     <>
       <div className="Nav">
-        {String(isAuthorized)}
         <ul>
           <li>
             <Link to="/battles">BATTLES</Link>
