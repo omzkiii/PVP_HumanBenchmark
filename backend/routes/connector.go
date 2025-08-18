@@ -29,5 +29,7 @@ func Connector() {
 
 	r := newRoom()
 	http.Handle("/room", r)
+
+	// Runs room GoRoutine Instanitate
 	go r.run()
 }

@@ -5,6 +5,7 @@ import Signup from "./components/Form Components/Signup";
 import Navigation from "./components/Navigation";
 import LandingPageContent from "./components/LandingContent";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 const url = import.meta.env.VITE_API_BASE_URL;
@@ -86,6 +87,27 @@ function App() {
   }
 
 
+  // Transition
+  const [pageState, setPageState] = useState(false);
+  const navigate = useNavigate();
+
+  const handleTransition = (length: number) => {
+    setPageState(true);
+    
+    const navigateTimer = setTimeout(() => {
+      navigate('/matchmaking');
+    }, length * 0.8); 
+
+    const hideTimer = setTimeout(() => {
+      setPageState(false);
+    }, length);
+  
+    return () => {
+      clearTimeout(navigateTimer);
+      clearTimeout(hideTimer);
+    };
+  }
+
 
   // maybe edit this in api instance
   useEffect(() => {
@@ -126,6 +148,8 @@ function App() {
 
   return (
     <>
+      <div className={`transition ${pageState ? `transition-activate` : ``}`}> </div>
+
       <Navigation 
       isValidated={isValidationState} 
       onAuthChange={setisValidationState}
@@ -138,6 +162,9 @@ function App() {
       <LandingPageContent
         isAuthenticated={isValidationState}
         onSignupToggle={toggleSignupModal}
+        onTransitionHandle={handleTransition}
+        
+        // ================
       />
     </>
   );

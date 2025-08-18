@@ -1,0 +1,29 @@
+:root {
+    --dark-clr: #1E1E1E;
+    --main-clr: #F5F7F8;
+    --sec-clr: #F4CE14;
+    --ter-clr: #495E57;
+}
+
+body, html { 
+    padding: 0;
+    margin: 0;
+    background-color: var(--main-clr);
+    font-family: 'Passion One', cursive;
+    overflow-x: hidden;
+}
+
+.QueuePage {
+    display: flex;
+    justify-content: center; /* horizontal center */
+    align-items: center;     /* vertical center */
+    padding: 0;
+    margin: 0;
+    background-color: var(--dark-clr);
+    width: 100vw;
+    height: 100vh;
+}
+
+.QueuePage h1 {
+    color: white;
+}

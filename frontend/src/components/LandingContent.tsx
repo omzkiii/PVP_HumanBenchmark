@@ -6,9 +6,10 @@ import SignupModal from "./Form Components/SignupModal";
 interface LandingProps {
   isAuthenticated?: boolean | null;
   onSignupToggle: (state: boolean) => void;
+  onTransitionHandle?: (length: number) => {};
 }
 
-export default function LandingPageContent({ isAuthenticated, onSignupToggle }: LandingProps) {
+export default function LandingPageContent({ isAuthenticated, onSignupToggle, onTransitionHandle }: LandingProps) {
   const navigate = useNavigate();
 
   const handleMatchClick = () => { 
@@ -17,7 +18,7 @@ export default function LandingPageContent({ isAuthenticated, onSignupToggle }: 
       onSignupToggle(true);
     } else {
       // Navigate to matches if authenticated
-      navigate('/matchmaking');
+      onTransitionHandle?.(4000);
     }
   };
 

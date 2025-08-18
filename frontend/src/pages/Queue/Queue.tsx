@@ -1,6 +1,10 @@
 import React, { useRef } from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import "./Queue.css";
+
+// Note Should Have a Validity CHecker 
+
 
 const url = import.meta.env.VITE_API_BASE_URL;
 
@@ -9,8 +13,6 @@ export default function QueuePage() {
 
   const socket: any = useRef(null);
 
-  const [message, setMessage] = useState("");
-  
 
   //Connect to go lang websocket base
   function connect(url: string) {
@@ -20,6 +22,7 @@ export default function QueuePage() {
       console.log(`Connected to ${url}`);
     };
 
+    
     socket.current.onmessage = (event: MessageEvent) => {
       try {
         const msg = JSON.parse(event.data) as {
@@ -47,28 +50,18 @@ export default function QueuePage() {
       console.error("Socket error:", err);
     };
   }
+
+  // Handles Web Socket Coonnection
   useEffect(() => {
     connect(`ws://localhost:3000/room`);
   }, []); // Empty makes it run once
 
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-    if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-      socket.current.send(message);
-      setMessage("");
-    }
-  };
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)} // updates message state
-        />
-        <input type="submit" value="Send" />
-      </form>
+      <div className="QueuePage"> 
+        <h1>  L O A D I N G </h1>
+      </div>
     </>
   );
 }

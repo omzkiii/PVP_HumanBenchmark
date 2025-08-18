@@ -20,6 +20,9 @@ export default function MatchPage() {
       console.log(`Connected to ${url}`);
     };
 
+
+    // Does handle room switches
+
     socket.current.onmessage = (event: MessageEvent) => {
       try {
         const msg = JSON.parse(event.data) as {
