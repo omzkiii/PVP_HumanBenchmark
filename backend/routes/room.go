@@ -43,6 +43,9 @@ func (r *room) run() {
 			fmt.Println(client, "leaves")
 			delete(r.clients, client)
 			close(client.recieve)
+			if len(r.clients) == 0 {
+				return 
+			}
 		case msg := <-r.forward: // Listens to messages
 			for client := range r.clients {
 				fmt.Println("messages are being sent")
@@ -50,15 +53,9 @@ func (r *room) run() {
 			}
 		}
 		fmt.Println(len(r.clients))
-		available_rooms := load_rooms()
 
 
-		// Needs logic here for better Client to Client Auth
-		if len(r.clients) == 2 {
-
-			// check room utils
-			go transfer_client(r.clients, available_rooms)
-		}
+		
 	}
 }
 

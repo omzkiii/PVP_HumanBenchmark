@@ -53,7 +53,13 @@ export default function QueuePage() {
 
   // Handles Web Socket Coonnection
   useEffect(() => {
-    connect(`ws://localhost:3000/room`);
+
+
+
+    // Check if valid, then do a connect forms passing data to room.go
+
+    //connect(`ws://localhost:3000/room`);
+    connect(`ws://localhost:3000/matchmaking`);
   }, []); // Empty makes it run once
 
 
@@ -66,7 +72,7 @@ export default function QueuePage() {
           <span className="space-mid-left"> F </span> <span> O </span> <span className="space-mid-right"> R </span> 
           <span> P </span> <span> L </span> <span> A </span> <span> Y </span> <span> E </span><span> R </span> <span> S </span> 
           </h1>
-        <button> Leave Queue </button>
+        <button onClick={() => socket.current?.close()}> Leave Queue </button>
         <div className="Wave">
           <ul>
             <li> </li>      

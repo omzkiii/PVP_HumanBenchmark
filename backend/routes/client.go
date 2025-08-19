@@ -4,7 +4,12 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+//the server-side representation of a connected user session
 type client struct { // Like an object
+
+
+	//Add user Id specifically for P2P interaction keep userID same for global room
+	userID string
 
 	// socket is the wewb scoket for this client
 	socket *websocket.Conn
@@ -25,7 +30,12 @@ func (c *client) read() {
 		if err != nil {
 			return
 		}
-		c.room.forward <- msg
+
+
+		if (c.room != nil) {
+			c.room.forward <- msg
+		}
+		
 	}
 }
 
