@@ -6,13 +6,11 @@ import (
 	"sync"
 )
 
-//Some issue exist here
-
+// Some issue exist here
 var RoomManager = struct {
 	mu    sync.Mutex
 	rooms map[string]*room
 }{rooms: make(map[string]*room)}
-
 
 func RoomHandler(store *MatchStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +36,7 @@ func RoomHandler(store *MatchStore) http.HandlerFunc {
 			http.Error(w, "forbidden", http.StatusForbidden)
 			return
 		}
-	
+
 		// Lookup or create room
 		RoomManager.mu.Lock()
 		rm, ok := RoomManager.rooms[id]
@@ -73,8 +71,3 @@ func RoomHandler(store *MatchStore) http.HandlerFunc {
 		c.read()
 	}
 }
-
-
-
-
-

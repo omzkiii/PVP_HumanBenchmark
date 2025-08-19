@@ -7,25 +7,24 @@ import (
 
 // Match Info And Match Store\
 type MatchInfo struct {
-	ID string
-	Players []string // Store a list of authorized players
-	Allowed map[string]bool // Lookup
-	Created time.Time
+	ID       string
+	Players  []string        // Store a list of authorized players
+	Allowed  map[string]bool // Lookup
+	Created  time.Time
 	ExpireAt time.Time
 }
 
-
 // Handles Matches in Bulk
 type MatchStore struct {
-	mu sync.Mutex // Mutual Exclusion for synchornization
+	mu      sync.Mutex // Mutual Exclusion for synchornization
 	matches map[string]*MatchInfo
-	ttl time.Duration
+	ttl     time.Duration
 }
 
 func NewMatchStore(ttl time.Duration) *MatchStore {
 	return &MatchStore{
 		matches: make(map[string]*MatchInfo), // Hashg map for type string = Match Tytpe
-		ttl: ttl,
+		ttl:     ttl,
 	}
 }
 
@@ -50,7 +49,6 @@ func (s *MatchStore) IsAllowed(matchID, userID string) bool {
 	}
 	return mi.Allowed[userID]
 }
-
 
 func (s *MatchStore) DeleteMatch(id string) {
 	s.mu.Lock()
