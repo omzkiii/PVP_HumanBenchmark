@@ -18,8 +18,6 @@ type client struct { // Like an object
 
 	// room is the room this client is chatting in
 	room *room
-
-	match *MatchInfo
 }
 
 func (c *client) read() {

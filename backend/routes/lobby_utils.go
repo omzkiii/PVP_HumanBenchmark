@@ -98,10 +98,10 @@ func (l *Lobby) createMatch(players []*client) {
 	}
 	l.matchStore.AddMatch(mi)
 
-	// http.HandleFunc("/matches/", func(w http.ResponseWriter, r *http.Request) {
-	// 	h := mi.RoomHandler() // from room.go
-	// 	h.ServeHTTP(w, r)
-	// })
+	http.HandleFunc("/matches/", func(w http.ResponseWriter, r *http.Request) {
+		h := mi.RoomHandler() // from room.go
+		h.ServeHTTP(w, r)
+	})
 
 	// build ws url and path (cookies expected to be sent automatically)
 	wsURL := "ws://" + l.host + "/room/" + matchID // Websocket url
@@ -158,7 +158,6 @@ func LobbyWSHandler(l *Lobby) http.HandlerFunc {
 			socket:  socket,
 			recieve: make(chan []byte, 16),
 			room:    nil,
-			match:   nil,
 		}
 
 		// start writer and reader
