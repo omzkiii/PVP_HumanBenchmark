@@ -89,22 +89,19 @@ func (l *Lobby) stop() {
 // Dis handles match creation
 func (l *Lobby) createMatch(players []*client) {
 	matchID := uuid.NewString()
-	allowed := make(map[string]bool)
-	playerIDs := make([]string, 0, len(players))
-
-	for _, p := range players {
-		playerIDs = append(playerIDs, p.userID)
-		allowed[p.userID] = true
-	}
 
 	mi := &MatchInfo{
 		ID:       matchID,
-		Players:  playerIDs,
-		Allowed:  allowed,
+		Players:  players,
 		Created:  time.Now(),
 		ExpireAt: time.Now().Add(10 * time.Minute),
 	}
 	l.matchStore.AddMatch(mi)
+
+	// http.HandleFunc("/matches/", func(w http.ResponseWriter, r *http.Request) {
+	// 	h := mi.RoomHandler() // from room.go
+	// 	h.ServeHTTP(w, r)
+	// })
 
 	// build ws url and path (cookies expected to be sent automatically)
 	wsURL := "ws://" + l.host + "/room/" + matchID // Websocket url
@@ -129,13 +126,14 @@ func (l *Lobby) createMatch(players []*client) {
 		}
 		// Do NOT forcibly close p.socket here; let the client initiate reconnect.
 	}
-	log.Printf("match %s created for %v\n", matchID, playerIDs)
+	log.Printf("match %s created for %v\n", matchID, mi.Players)
 }
 
 //
 
 func LobbyWSHandler(l *Lobby) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// VALIDATION ======================================
 		cookie, err := r.Cookie("token")
 		log.Println("Matchmaking hit for request from:", r.RemoteAddr)
 		if err != nil {
@@ -147,6 +145,8 @@ func LobbyWSHandler(l *Lobby) http.HandlerFunc {
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}
+		// =================================
+
 		socket, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Println("upgrade error:", err)
@@ -158,6 +158,7 @@ func LobbyWSHandler(l *Lobby) http.HandlerFunc {
 			socket:  socket,
 			recieve: make(chan []byte, 16),
 			room:    nil,
+			match:   nil,
 		}
 
 		// start writer and reader

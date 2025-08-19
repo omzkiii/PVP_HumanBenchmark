@@ -11,8 +11,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-
-
 func Users(queries *database.Queries) {
 	q := db{
 		Queries: queries,
@@ -23,7 +21,6 @@ func Users(queries *database.Queries) {
 	http.Handle("GET /users", tokenMiddleware(q.getUsersHandler))
 	http.Handle("GET /auth", tokenMiddleware(authHandler))
 	http.Handle("GET /me", tokenMiddleware(q.meHandler)) // Temp func For handling single user verification
-
 }
 
 // HANDLERS
@@ -147,7 +144,7 @@ func (q *db) loginHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
 		Value:    token,
-		Expires:  time.Now().Add(time.Minute),
+		Expires:  time.Now().Add(5 * time.Minute),
 		HttpOnly: true,
 		Secure:   false,
 		Path:     "/",
@@ -174,7 +171,3 @@ func (q *db) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("logged out"))
 }
-
-
-
-
