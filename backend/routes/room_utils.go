@@ -24,7 +24,7 @@ func pop_room(rooms []room) room {
 }
 
 func transfer_client(clients map[*client]bool, rooms []room) {
-	url := uuid.NewString() //Creates Empty URL STRING
+	url := uuid.NewString() // Creates Empty URL STRING
 	path := fmt.Sprintf("ws://localhost:3000/%v", url)
 
 	new_room := pop_room(rooms)
@@ -33,6 +33,7 @@ func transfer_client(clients map[*client]bool, rooms []room) {
 		msg := map[string]string{
 			"action": "switch",
 			"url":    path,
+			"id":     url,
 		}
 		data, _ := json.Marshal(msg)
 		client.socket.WriteMessage(websocket.TextMessage, data)
