@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "./Queue.css";
 
-// Note Should Have a Validity CHecker 
-
+// Note Should Have a Validity CHecker
 
 const url = import.meta.env.VITE_API_BASE_URL;
 
@@ -14,7 +13,6 @@ export default function QueuePage() {
 
   const socket: any = useRef(null);
 
-
   //Connect to go lang websocket base
   function connect(url: string) {
     socket.current = new WebSocket(url);
@@ -23,7 +21,6 @@ export default function QueuePage() {
       console.log(`Connected to ${url}`);
     };
 
-    
     socket.current.onmessage = (event: MessageEvent) => {
       try {
         const msg = JSON.parse(event.data) as {
@@ -33,7 +30,6 @@ export default function QueuePage() {
         };
 
         if (msg.action === "switch" && msg.url && msg.path) {
-
           //Need to add a confirmation somewhere here
           console.log(`Switching to new socket: ${msg.url}`);
           socket.current.close();
@@ -41,8 +37,6 @@ export default function QueuePage() {
           setTimeout(() => {
             navigate(`${msg.path}`);
           }, 3000);
-        
-
         } else {
           console.log("Message:", msg);
         }
@@ -62,35 +56,28 @@ export default function QueuePage() {
 
   // Handles Web Socket Coonnection
   useEffect(() => {
-
-
-
     // Check if valid, then do a connect forms passing data to room.go
 
     //connect(`ws://localhost:3000/room`);
     connect(`ws://localhost:3000/matchmaking`);
   }, []); // Empty makes it run once
 
-
   return (
     <>
       <div className="QueuePage">
-   
-        <h1> 
-          <span> L </span> <span> O </span> <span> O </span> <span> K </span> <span> I </span><span> N </span> <span> G </span> 
-          <span className="space-mid-left"> F </span> <span> O </span> <span className="space-mid-right"> R </span> 
-          <span> P </span> <span> L </span> <span> A </span> <span> Y </span> <span> E </span><span> R </span> <span> S </span> 
-          </h1>
+        <h1>
+          <span> L </span> <span> O </span> <span> O </span> <span> K </span>{" "}
+          <span> I </span>
+          <span> N </span> <span> G </span>
+          <span className="space-mid-left"> F </span> <span> O </span>{" "}
+          <span className="space-mid-right"> R </span>
+          <span> P </span> <span> L </span> <span> A </span> <span> Y </span>{" "}
+          <span> E </span>
+          <span> R </span> <span> S </span>
+        </h1>
         <button onClick={() => socket.current?.close()}> Leave Queue </button>
         <div className="Wave">
           <ul>
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
             <li> </li>
             <li> </li>
             <li> </li>
@@ -104,23 +91,6 @@ export default function QueuePage() {
             <li> </li>
             <li> </li>
             <li> </li>
-            
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-          </ul>
-        </div>
-        <div className="Wave">
-          <ul>
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
             <li> </li>
             <li> </li>
             <li> </li>
@@ -128,12 +98,7 @@ export default function QueuePage() {
             <li> </li>
             <li> </li>
             <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
+
             <li> </li>
             <li> </li>
             <li> </li>
@@ -143,13 +108,13 @@ export default function QueuePage() {
         </div>
         <div className="Wave">
           <ul>
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
             <li> </li>
             <li> </li>
             <li> </li>
@@ -172,13 +137,6 @@ export default function QueuePage() {
         </div>
         <div className="Wave">
           <ul>
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
             <li> </li>
             <li> </li>
             <li> </li>
@@ -186,28 +144,6 @@ export default function QueuePage() {
             <li> </li>
             <li> </li>
             <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-          </ul>
-        </div>
-        <div className="Wave">
-          <ul>
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
             <li> </li>
             <li> </li>
             <li> </li>
@@ -230,13 +166,6 @@ export default function QueuePage() {
         </div>
         <div className="Wave">
           <ul>
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
             <li> </li>
             <li> </li>
             <li> </li>
@@ -244,28 +173,6 @@ export default function QueuePage() {
             <li> </li>
             <li> </li>
             <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-            <li> </li>
-          </ul>
-        </div>
-        <div className="Wave">
-          <ul>
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
             <li> </li>
             <li> </li>
             <li> </li>
@@ -288,13 +195,13 @@ export default function QueuePage() {
         </div>
         <div className="Wave">
           <ul>
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
             <li> </li>
             <li> </li>
             <li> </li>
@@ -317,13 +224,100 @@ export default function QueuePage() {
         </div>
         <div className="Wave">
           <ul>
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
-            <li> </li>      
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+          </ul>
+        </div>
+        <div className="Wave">
+          <ul>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
+            <li> </li>
             <li> </li>
             <li> </li>
             <li> </li>
@@ -345,10 +339,6 @@ export default function QueuePage() {
           </ul>
         </div>
       </div>
-      
-
-
-
     </>
   );
 }

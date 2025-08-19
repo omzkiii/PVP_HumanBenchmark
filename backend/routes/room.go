@@ -44,7 +44,7 @@ func (r *room) run() {
 			delete(r.clients, client)
 			close(client.recieve)
 			if len(r.clients) == 0 {
-				return 
+				return
 			}
 		case msg := <-r.forward: // Listens to messages
 			for client := range r.clients {
@@ -54,8 +54,6 @@ func (r *room) run() {
 		}
 		fmt.Println(len(r.clients))
 
-
-		
 	}
 }
 

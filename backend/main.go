@@ -1,36 +1,14 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"log"
 	"net/http"
-	"sync"
-	"time"
 
 	"github.com/omzkiii/PVP_HumanBenchmark/backend/database"
 	"github.com/omzkiii/PVP_HumanBenchmark/backend/routes"
 
 	"github.com/rs/cors"
 )
-
-var (
-	once        sync.Once
-	lobby       *routes.Lobby
-	matchStore  *routes.MatchStore
-	lobbyCancel context.CancelFunc
-)
-
-func initLobbyOnce() {
-	once.Do(func() {
-		matchStore = routes.NewMatchStore(10 * time.Minute)
-		lobby = routes.NewLobby("localhost:3000", matchStore)
-		ctx, cancel := context.WithCancel(context.Background())
-		lobbyCancel = cancel
-		go lobby.Run(ctx)
-		log.Println("Lobby and MatchStore initialized")
-	})
-}
 
 func main() {
 	// Database
@@ -43,28 +21,7 @@ func main() {
 	routes.Users(queries)
 	routes.Connector()
 	routes.Tests()
-
-	// Websocket / match endpoints - use closures that capture lobby / matchStore
-	http.HandleFunc("/matchmaking", func(w http.ResponseWriter, r *http.Request) {
-		initLobbyOnce() // Lobby must initialzie once 
-		if lobby == nil {
-			http.Error(w, "Lobby not initialized", http.StatusInternalServerError)
-			return
-		}
-		h := routes.LobbyWSHandler(lobby) // form lobby.go
-		h.ServeHTTP(w, r)
-
-	})
-
-	http.HandleFunc("/matches/", func(w http.ResponseWriter, r *http.Request) {
-		initLobbyOnce()
-		if matchStore == nil {
-			http.Error(w, "Matchstore not initialized", http.StatusInternalServerError)
-			return
-		}
-		h := routes.RoomHandler(matchStore) // from room.go
-		h.ServeHTTP(w, r)
-	})
+	routes.Lobbies()
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
@@ -80,5 +37,4 @@ func main() {
 	//  - No graceful shutdown
 	//  - Control Over timeouts
 	//  - Harder to handle signals
-
 }
