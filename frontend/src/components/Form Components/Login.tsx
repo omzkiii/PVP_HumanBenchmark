@@ -4,7 +4,6 @@ import { IsAuthorized } from "../../API/AuthHelper";
 import "./Forms.css";
 import { useNavigate } from "react-router-dom";
 
-
 const url = import.meta.env.VITE_API_BASE_URL;
 type LoginForm = {
   username: string;
@@ -63,7 +62,9 @@ export default function Login({ onExit, onLoginSuccess }: LoginProps) {
   }
   return (
     <div className="Form-modal">
-      <button onClick={onExit} className="exitBtn" >X</button>
+      <button onClick={onExit} className="exitBtn">
+        X
+      </button>
       <h1> LOG IN </h1>
       <div className="wrap">
         <div>
@@ -84,7 +85,6 @@ export default function Login({ onExit, onLoginSuccess }: LoginProps) {
         </div>
         <button onClick={handleSubmit}>Log in</button>
         <button onClick={() => routeChange(123)}> Login as Guest </button>
-
       </div>
     </div>
   );

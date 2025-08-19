@@ -10,7 +10,6 @@ export default function MatchPage() {
   const socket = useRef<WebSocket>(null);
 
   const [message, setMessage] = useState("");
-  
 
   //Connect to go lang websocket base
   function connect(url: string) {
@@ -19,7 +18,6 @@ export default function MatchPage() {
     socket.current.onopen = () => {
       console.log(`Connected to ${url}`);
     };
-
 
     // Does handle room switches
 

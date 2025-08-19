@@ -12,7 +12,7 @@ var RoomManager = struct {
 	rooms map[string]*room
 }{rooms: make(map[string]*room)}
 
-func RoomHandler(store *MatchStore) http.HandlerFunc {
+func (match *MatchInfo) RoomHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// path /room/{id}
 		id := strings.TrimPrefix(r.URL.Path, "/room/")
@@ -20,6 +20,7 @@ func RoomHandler(store *MatchStore) http.HandlerFunc {
 			http.Error(w, "bad request", http.StatusBadRequest)
 			return
 		}
+
 		// validate cookie
 		cookie, err := r.Cookie("token")
 		if err != nil {
@@ -32,7 +33,9 @@ func RoomHandler(store *MatchStore) http.HandlerFunc {
 			return
 		}
 		// check match allowlist
-		if !store.IsAllowed(id, userID.Subject) {
+
+		_, ok := match.Allowed[userID.Subject]
+		if !ok {
 			http.Error(w, "forbidden", http.StatusForbidden)
 			return
 		}
@@ -54,20 +57,17 @@ func RoomHandler(store *MatchStore) http.HandlerFunc {
 			return
 		}
 
-		// Create client and attach to room
-		c := &client{
-			userID:  userID.Subject,
-			socket:  socket,
-			recieve: make(chan []byte, 16),
-			room:    rm,
+		for _, client := range match.Players {
+			client.socket = socket
+			client.room = rm
+			rm.join <- client
+
+			go client.write()
+			client.read()
 		}
-
 		// Join the room
-		rm.join <- c
-		defer func() { rm.leave <- c }()
-
-		// Start writer and read loop
-		go c.write()
-		c.read()
+		for _, client := range match.Players {
+			rm.leave <- client
+		}
 	}
 }

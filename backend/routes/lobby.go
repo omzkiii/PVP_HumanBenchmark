@@ -38,14 +38,4 @@ func Lobbies() {
 		h := LobbyWSHandler(lobby) // form lobby.go
 		h.ServeHTTP(w, r)
 	})
-
-	http.HandleFunc("/matches/", func(w http.ResponseWriter, r *http.Request) {
-		initLobbyOnce()
-		if matchStore == nil {
-			http.Error(w, "Matchstore not initialized", http.StatusInternalServerError)
-			return
-		}
-		h := RoomHandler(matchStore) // from room.go
-		h.ServeHTTP(w, r)
-	})
 }
