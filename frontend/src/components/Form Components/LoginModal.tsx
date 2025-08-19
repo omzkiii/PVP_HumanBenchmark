@@ -1,4 +1,5 @@
 import Login from "./Login";
+import "./Forms.css";
 
 interface LoginModalProps {
   onClose: () => void;
@@ -9,7 +10,6 @@ function LoginModal({ onClose, onLoginSuccess }: LoginModalProps) {
   return (
     <div className="modal">
       <div>
-        <button onClick={onClose}>X</button>
         <Login onExit={onClose} onLoginSuccess={() => onLoginSuccess?.()} />
       </div>
     </div>

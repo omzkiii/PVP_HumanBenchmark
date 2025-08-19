@@ -1,6 +1,10 @@
 import axios from "axios";
 import { useContext, useState, type ChangeEvent } from "react";
 import { IsAuthorized } from "../../API/AuthHelper";
+import "./Forms.css";
+import { useNavigate } from "react-router-dom";
+
+
 const url = import.meta.env.VITE_API_BASE_URL;
 type LoginForm = {
   username: string;
@@ -28,6 +32,11 @@ export default function Login({ onExit, onLoginSuccess }: LoginProps) {
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
+  let navigate = useNavigate();
+  const routeChange = (id: number) => {
+    navigate(`/matches/${id}`);
+  };
+
   async function handleSubmit() {
     try {
       const res = await axios.post(url + "/login", form, {
@@ -53,25 +62,30 @@ export default function Login({ onExit, onLoginSuccess }: LoginProps) {
     onExit(); //
   }
   return (
-    <div>
-      <div>
-        username
-        <input
-          name="username"
-          onChange={handleOnChange}
-          value={form.username}
-        />
+    <div className="Form-modal">
+      <button onClick={onExit} className="exitBtn" >X</button>
+      <h1> LOG IN </h1>
+      <div className="wrap">
+        <div>
+          username
+          <input
+            name="username"
+            onChange={handleOnChange}
+            value={form.username}
+          />
+        </div>
+        <div>
+          password
+          <input
+            name="password"
+            onChange={handleOnChange}
+            value={form.password}
+          />
+        </div>
+        <button onClick={handleSubmit}>Log in</button>
+        <button onClick={() => routeChange(123)}> Login as Guest </button>
+
       </div>
-      <div>
-        password
-        <input
-          name="password"
-          onChange={handleOnChange}
-          value={form.password}
-        />
-      </div>
-      <button onClick={handleSubmit}>Log in</button>
-      <p>Succesful login user: {success}</p>
     </div>
   );
 }

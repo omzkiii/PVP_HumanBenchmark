@@ -2,6 +2,9 @@ import axios, { HttpStatusCode } from "axios";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState, type ChangeEvent } from "react";
 import { IsAuthorized } from "../../API/AuthHelper";
+import "./Forms.css";
+
+
 const url = import.meta.env.VITE_API_BASE_URL;
 type SignupForm = {
   username: string;
@@ -53,27 +56,33 @@ export default function Signup({ onExit }: SignupProps) {
   }
 
   return (
-    <div>
-      <div>
-        username
-        <input
-          name="username"
-          onChange={handleOnChange}
-          value={form.username}
-        />
-      </div>
-      <div>
-        password
-        <input
-          name="password"
-          onChange={handleOnChange}
-          value={form.password}
-        />
-      </div>
+    <div className="Form-modal">
+      <button onClick={onExit} className="exitBtn" >X</button>
+      <h1> CREATE ACCOUNT </h1>
 
-      <button onClick={handleSubmit}>Sign Up</button>
-      <button onClick={() => routeChange(123)}> Login as Guest </button>
-      <p>{success}</p>
+      <div className="wrap"> 
+        <div>
+          username
+          <input
+            name="username"
+            onChange={handleOnChange}
+            value={form.username}
+          />
+        </div>
+        <div>
+          password
+          <input
+            name="password"
+            onChange={handleOnChange}
+            value={form.password}
+          />
+        </div>
+
+        <button onClick={handleSubmit}>Sign Up</button>
+        <button onClick={() => routeChange(123)}> Login as Guest </button>
+
+      </div>
+      
     </div>
   );
 }

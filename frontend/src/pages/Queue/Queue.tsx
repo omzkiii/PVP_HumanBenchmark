@@ -61,7 +61,12 @@ export default function QueuePage() {
     <>
       <div className="QueuePage">
    
-        <h1> <span> L </span> <span> O </span> <span> A </span> <span> D </span> <span> I </span><span> N </span> <span> G </span>  </h1>
+        <h1> 
+          <span> L </span> <span> O </span> <span> O </span> <span> K </span> <span> I </span><span> N </span> <span> G </span> 
+          <span className="space-mid-left"> F </span> <span> O </span> <span className="space-mid-right"> R </span> 
+          <span> P </span> <span> L </span> <span> A </span> <span> Y </span> <span> E </span><span> R </span> <span> S </span> 
+          </h1>
+        <button> Leave Queue </button>
         <div className="Wave">
           <ul>
             <li> </li>      

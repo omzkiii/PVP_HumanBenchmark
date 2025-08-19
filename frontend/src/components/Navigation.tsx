@@ -30,6 +30,8 @@ export default function Navigation({
     onSignupToggle?.(false);
   };
 
+  console.log("Navigation render — isAuthorized:", isAuthorized);
+
   return (
     <>
       <div className="Nav">
