@@ -28,7 +28,7 @@ const router = createBrowserRouter([
         element: <QueuePage />,
       },
       {
-        path: "/matches/:id", // for active match instances
+        path: "/match/:id", // for active match instances
         element: <MatchPage />,
       },
       {

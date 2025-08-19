@@ -3,16 +3,14 @@ import React, { createContext, useEffect, useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 const API = import.meta.env.VITE_API_BASE_URL;
 
-
 export type AuthContextType = [
   boolean | null,
-  React.Dispatch<React.SetStateAction<boolean | null>>
+  React.Dispatch<React.SetStateAction<boolean | null>>,
 ];
 
 export const IsAuthorized = createContext<AuthContextType | undefined>(
-  undefined
+  undefined,
 );
-
 
 function AuthHelper() {
   const [authStatus, setAuthStatus] = useState<boolean | null>(null);
@@ -45,7 +43,6 @@ function AuthHelper() {
     };
     connect();
   }, []);
-
 
   console.log("AuthHelper render — authStatus:", authStatus);
 
