@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "./Queue.css";
 
 // Note Should Have a Validity CHecker 
@@ -9,6 +9,7 @@ import "./Queue.css";
 const url = import.meta.env.VITE_API_BASE_URL;
 
 export default function QueuePage() {
+  const navigate = useNavigate();
   const params = useParams(); // For handeling queue ticket id
 
   const socket: any = useRef(null);
@@ -28,12 +29,20 @@ export default function QueuePage() {
         const msg = JSON.parse(event.data) as {
           action: string;
           url?: string;
+          path?: string;
         };
 
-        if (msg.action === "switch" && msg.url) {
+        if (msg.action === "switch" && msg.url && msg.path) {
+
+          //Need to add a confirmation somewhere here
           console.log(`Switching to new socket: ${msg.url}`);
           socket.current.close();
           connect(msg.url);
+          setTimeout(() => {
+            navigate(`${msg.path}`);
+          }, 3000);
+        
+
         } else {
           console.log("Message:", msg);
         }

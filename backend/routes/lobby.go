@@ -113,8 +113,8 @@ func (l *Lobby) createMatch(players []*client) {
 	l.matchStore.AddMatch(mi)
 
 	// build ws url and path (cookies expected to be sent automatically)
-	wsURL := "ws://" + l.host + "/room/" + matchID
-	pagePath := "/match/" + matchID
+	wsURL := "ws://" + l.host + "/room/" + matchID // Websocket url 
+	pagePath := "/matches/" + matchID // React Redriect
 
 	// notify each player. Use client's recieve channel so their existing writer sends it
 	msgObj := map[string]string{
