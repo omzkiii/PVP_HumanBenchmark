@@ -34,6 +34,7 @@ func newRoom() *room {
 
 // A continuous loop with a select statement that listens for changes in rooms
 func (r *room) run() {
+	fmt.Println("ROOM IS OPEN")
 	for {
 		select {
 		case client := <-r.join:
