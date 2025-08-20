@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
 export default function MatchPage() {
-  const location = useLocation();
   const { id } = useParams<{ id: string }>();
 
   const matchSocket = useRef<WebSocket | null>(null);
@@ -48,7 +47,7 @@ export default function MatchPage() {
   useEffect(() => {
     if (!id) return;
 
-    const ws = connect(`ws://localhost:3000/room/${id}`);
+    const ws = connect(`ws://localhost:3000/${id}`);
     matchSocket.current = ws;
 
     return () => {
