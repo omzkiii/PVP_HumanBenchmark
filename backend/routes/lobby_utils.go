@@ -140,7 +140,7 @@ func LobbyWSHandler(l *Lobby) http.HandlerFunc {
 		}
 
 		c := &client{
-			userID:  w.Header().Get("userID"),
+			userID:  r.Header.Get("userID"),
 			socket:  socket,
 			recieve: make(chan []byte, 16),
 			room:    nil,

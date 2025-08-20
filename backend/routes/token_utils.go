@@ -66,8 +66,7 @@ func authMiddleware(next func(http.ResponseWriter, *http.Request)) http.Handler 
 			return
 		}
 
-		// Add userID to the header of the next handler
-		w.Header().Add("userID", req_claims.Subject)
+		r.Header.Add("userID", req_claims.Subject)
 		next(w, r)
 	})
 }
