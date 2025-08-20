@@ -2,7 +2,6 @@ package routes
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -80,22 +79,4 @@ var upgrader = &websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
-}
-
-func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	log.Println("ServeHTTP hit for /room")
-	socket, err := upgrader.Upgrade(w, req, nil)
-	if err != nil { // Check if error exist
-		log.Fatal("ServeHTTP", err)
-		return
-	}
-	client := &client{
-		socket:  socket,
-		recieve: make(chan []byte, messageBufferSize),
-		room:    r,
-	}
-	r.join <- client
-	defer func() { r.leave <- client }()
-	go client.write()
-	client.read()
 }

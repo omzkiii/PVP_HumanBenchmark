@@ -22,7 +22,7 @@ func checkPlayer(userId string, players []*client) (*client, bool) {
 	return nil, false
 }
 
-func RoomHandler(store *MatchStore) http.HandlerFunc {
+func (match *MatchInfo) RoomHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("connecting to match")
 
@@ -42,7 +42,9 @@ func RoomHandler(store *MatchStore) http.HandlerFunc {
 		sub := r.Header.Get("userId")
 
 		// allowlist (also enforces TTL via IsAllowed)
-		if !store.IsAllowed(id, sub) {
+		client, ok := checkPlayer(sub, match.Players)
+		if !ok {
+			fmt.Println("FORBIDDED")
 			http.Error(w, "forbidden", http.StatusForbidden)
 			return
 		}
@@ -63,16 +65,12 @@ func RoomHandler(store *MatchStore) http.HandlerFunc {
 		}
 		RoomManager.mu.Unlock()
 
-		c := &client{
-			userID:  sub,
-			socket:  socket,
-			recieve: make(chan []byte, 16),
-			room:    rm,
-		}
+		client.socket = socket
+		client.room = rm
 
-		rm.join <- c
-		go c.write()
-		c.read()      // blocks until socket closes
-		rm.leave <- c // ensure leave on exit
+		rm.join <- client
+		go client.write()
+		client.read()      // blocks until socket closes
+		rm.leave <- client // ensure leave on exit
 	}
 }

@@ -19,7 +19,6 @@ func main() {
 
 	// ROUTES
 	routes.Users(queries)
-	routes.Connector()
 	routes.Tests()
 	routes.Lobbies()
 
