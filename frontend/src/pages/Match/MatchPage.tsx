@@ -1,10 +1,11 @@
 import React, { useRef } from "react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 const url = import.meta.env.VITE_API_BASE_URL;
 
 export default function MatchPage() {
+  const location = useLocation();
   const params = useParams(); // For handeling queue ticket id
 
   const socket = useRef<WebSocket>(null);
@@ -49,7 +50,7 @@ export default function MatchPage() {
     };
   }
   useEffect(() => {
-    connect(`ws://localhost:3000/room`);
+    connect(location.state);
   }, []); // Empty makes it run once
 
   const handleSubmit = (event: React.FormEvent) => {
