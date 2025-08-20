@@ -12,67 +12,65 @@ var RoomManager = struct {
 	rooms map[string]*room
 }{rooms: make(map[string]*room)}
 
-func (match *MatchInfo) RoomHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// path /room/{id}
-		id := strings.TrimPrefix(r.URL.Path, "/room/")
-		if id == "" {
-			http.Error(w, "bad request", http.StatusBadRequest)
-			return
-		}
+func RoomHandler(store *MatchStore) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
 
-		// validate cookie
-		cookie, err := r.Cookie("token")
-		if err != nil {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-		userID, err := validateToken(cookie.Value)
-		if err != nil {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-		// check match allowlist
+        // Dis handle rooom IDS
+        path := strings.TrimPrefix(r.URL.Path, "/room/")
+        if path == "" {
+            http.Error(w, "bad request", http.StatusBadRequest)
+            return
+        }
+        // only take the first segment as id
+        id := path
+        if i := strings.IndexByte(path, '/'); i >= 0 {
+            id = path[:i]
+        }
 
-		_, ok := match.Allowed[userID.Subject]
-		if !ok {
-			http.Error(w, "forbidden", http.StatusForbidden)
-			return
-		}
+        // auth
+        cookie, err := r.Cookie("token")
+        if err != nil {
+            http.Error(w, "unauthorized", http.StatusUnauthorized)
+            return
+        }
+        sub, err := validateToken(cookie.Value)
+        if err != nil {
+            http.Error(w, "unauthorized", http.StatusUnauthorized)
+            return
+        }
 
-		// Lookup or create room
-		RoomManager.mu.Lock()
-		rm, ok := RoomManager.rooms[id]
-		if !ok {
-			rm = newRoom()
-			RoomManager.rooms[id] = rm
-			go rm.run()
-		}
-		RoomManager.mu.Unlock()
+        // allowlist (also enforces TTL via IsAllowed)
+        if !store.IsAllowed(id, sub.Subject) {
+            http.Error(w, "forbidden", http.StatusForbidden)
+            return
+        }
 
-		// Upgrade connection to WebSocket
-		socket, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			http.Error(w, "upgrade failed", http.StatusInternalServerError)
-			return
-		}
+        // get or create room
+        RoomManager.mu.Lock()
+        rm := RoomManager.rooms[id]
+        if rm == nil {
+            rm = newRoom()
+            RoomManager.rooms[id] = rm
+            go rm.run(id)
+        }
+        RoomManager.mu.Unlock()
 
-		// Create a NEW client for this socket
-		c := &client{
-			userID:  userID.Subject,
-			socket:  socket,
-			recieve: make(chan []byte, 16),
-			room:    rm,
-		}
+        socket, err := upgrader.Upgrade(w, r, nil)
+        if err != nil {
+            http.Error(w, "upgrade failed", http.StatusInternalServerError)
+            return
+        }
+		
+        c := &client{
+            userID:  sub.Subject,
+            socket:  socket,
+            recieve: make(chan []byte, 16),
+            room:    rm,
+        }
 
-		// join the room
-		rm.join <- c
-
-		// writer in background, reader blocks
-		go c.write()
-		c.read()
-
-		// when read() returns, ensure leave
-		rm.leave <- c
-	}
+        rm.join <- c
+        go c.write()
+        c.read()        // blocks until socket closes
+        rm.leave <- c   // ensure leave on exit
+    }
 }

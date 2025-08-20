@@ -38,4 +38,9 @@ func Lobbies() {
 		h := LobbyWSHandler(lobby) // form lobby.go
 		h.ServeHTTP(w, r)
 	})
+
+	// HANDLES ROOM 
+	http.HandleFunc("/room/", func(w http.ResponseWriter, r *http.Request) {
+        RoomHandler(matchStore).ServeHTTP(w, r)
+    })
 }

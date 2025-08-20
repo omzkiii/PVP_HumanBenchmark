@@ -146,13 +146,7 @@ func (l *Lobby) createMatch(players []*client) {
 	}
 	l.matchStore.AddMatch(mi)
 
-
-	// Check this out for ID instantiation
-	http.HandleFunc("/matches/", func(w http.ResponseWriter, r *http.Request) {
-		h := mi.RoomHandler() // from room.go
-		h.ServeHTTP(w, r)
-	})
-
+	
 	// build ws url and path (cookies expected to be sent automatically)
 	wsURL := "ws://" + l.host + "/room/" + matchID // Websocket url
 	pagePath := "/matches/" + matchID              // React Redriect

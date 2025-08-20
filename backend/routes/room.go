@@ -32,28 +32,35 @@ func newRoom() *room {
 	}
 }
 
-// A continuous loop with a select statement that listens for changes in rooms
-func (r *room) run() {
+func (r *room) broadcast(b []byte) {
+	// drop if slow
+	for cli := range r.clients {
+		select { case cli.recieve <- b: default: }
+	}
+}
+
+// event loop
+func (r *room) run(roomID string) {
 	for {
 		select {
-		case client := <-r.join:
-			fmt.Println(client, "joined")
-			r.clients[client] = true
-		case client := <-r.leave:
-			fmt.Println(client, "leaves")
-			delete(r.clients, client)
-			close(client.recieve)
+		case c := <-r.join:
+			r.clients[c] = true
+			r.broadcast([]byte(fmt.Sprintf(`{"type":"system","event":"join","user":"%s"}`, c.userID)))
+
+		case c := <-r.leave:
+			delete(r.clients, c)
+			r.broadcast([]byte(fmt.Sprintf(`{"type":"system","event":"leave","user":"%s"}`, c.userID)))
 			if len(r.clients) == 0 {
+				// delete empty room
+				RoomManager.mu.Lock()
+				delete(RoomManager.rooms, roomID)
+				RoomManager.mu.Unlock()
 				return
 			}
-		case msg := <-r.forward: // Listens to messages
-			for client := range r.clients {
-				fmt.Println("messages are being sent")
-				client.recieve <- msg
-			}
-		}
-		fmt.Println(len(r.clients))
 
+		case msg := <-r.forward:
+			r.broadcast(msg)
+		}
 	}
 }
 

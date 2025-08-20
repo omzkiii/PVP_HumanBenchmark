@@ -1,61 +1,72 @@
-import React, { useRef } from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
-const url = import.meta.env.VITE_API_BASE_URL;
-
 export default function MatchPage() {
-  const params = useParams(); // For handeling queue ticket id
+  const { id } = useParams<{ id: string }>();
 
-  const socket = useRef<WebSocket>(null);
-
+  const matchSocket = useRef<WebSocket | null>(null);
+  const [connected, setConnected] = useState(false);
   const [message, setMessage] = useState("");
+  const [lastMessage, setLastMessage] = useState<any>(null);
 
-  //Connect to go lang websocket base
-  function connect(url: string) {
-    socket.current = new WebSocket(url);
+  // Connect to the room WebSocket and wire up handlers.
+  function connect(wsUrl: string) {
+    const ws = new WebSocket(wsUrl);
+    matchSocket.current = ws;
 
-    socket.current.onopen = () => {
-      console.log(`Connected to ${url}`);
+    ws.onopen = () => {
+      setConnected(true);
+      console.log(`Connected to ${wsUrl}`);
     };
 
-    // Does handle room switches
-
-    socket.current.onmessage = (event: MessageEvent) => {
+    ws.onmessage = (event: MessageEvent) => {
+      // Try to parse JSON; if not JSON, keep the raw string
       try {
-        const msg = JSON.parse(event.data) as {
-          action: string;
-          url?: string;
-        };
-
-        if (msg.action === "switch" && msg.url) {
-          console.log(`Switching to new socket: ${msg.url}`);
-          socket.current?.close();
-          connect(msg.url);
-        } else {
-          console.log("Message:", msg);
-        }
-      } catch (err) {
-        console.log(event.data);
+        const parsed = JSON.parse(event.data);
+        setLastMessage(parsed);
+        console.log("Message:", parsed);
+      } catch {
+        setLastMessage({ type: "raw", data: String(event.data) });
+        console.log("Message (raw):", event.data);
       }
     };
 
-    socket.current.onclose = () => {
-      console.log(`Disconnected from ${url}`);
+    ws.onclose = () => {
+      setConnected(false);
+      console.log(`Disconnected from ${wsUrl}`);
     };
 
-    socket.current.onerror = (event: Event) => {
+    ws.onerror = (event: Event) => {
       console.error("Socket error:", event);
     };
-  }
-  useEffect(() => {
-    connect(`ws://localhost:3000/room`);
-  }, []); // Empty makes it run once
 
+    return ws;
+  }
+
+  // Open the room socket on mount (and when :id changes); clean up on unmount.
+  useEffect(() => {
+    if (!id) return;
+
+    const ws = connect(`ws://localhost:3000/room/${id}`);
+    matchSocket.current = ws;
+
+    return () => {
+      try {
+        ws.close();
+      } finally {
+        matchSocket.current = null;
+        setConnected(false);
+      }
+    };
+  }, [id]);
+
+  
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-      socket.current.send(message);
+    const ws = matchSocket.current;
+    if (ws && ws.readyState === WebSocket.OPEN && message.trim()) {
+      // Send plain text
+      ws.send(message.trim());
       setMessage("");
     }
   };
@@ -66,10 +77,15 @@ export default function MatchPage() {
         <input
           type="text"
           value={message}
-          onChange={(e) => setMessage(e.target.value)} // updates message state
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder={connected ? "Type and hit Enter…" : "Connecting…"}
         />
-        <input type="submit" value="Send" />
+        <input type="submit" value="Send" disabled={!connected} />
       </form>
+
+      <pre style={{ marginTop: 12, padding: 8, background: "#f7f7f7", borderRadius: 6 }}>
+        {JSON.stringify({ connected, lastMessage }, null, 2)}
+      </pre>
     </>
   );
 }
