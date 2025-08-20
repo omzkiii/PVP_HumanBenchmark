@@ -35,7 +35,10 @@ func newRoom() *room {
 func (r *room) broadcast(b []byte) {
 	// drop if slow
 	for cli := range r.clients {
-		select { case cli.recieve <- b: default: }
+		select {
+		case cli.recieve <- b:
+		default:
+		}
 	}
 }
 

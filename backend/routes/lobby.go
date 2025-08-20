@@ -39,8 +39,8 @@ func Lobbies() {
 		h.ServeHTTP(w, r)
 	})
 
-	// HANDLES ROOM 
+	// HANDLES ROOM
 	http.HandleFunc("/room/", func(w http.ResponseWriter, r *http.Request) {
-        RoomHandler(matchStore).ServeHTTP(w, r)
-    })
+		authMiddleware(RoomHandler(matchStore)).ServeHTTP(w, r)
+	})
 }
