@@ -57,17 +57,22 @@ func (match *MatchInfo) RoomHandler() http.HandlerFunc {
 			return
 		}
 
-		for _, client := range match.Players {
-			client.socket = socket
-			client.room = rm
-			rm.join <- client
+		// Create a NEW client for this socket
+		c := &client{
+			userID:  userID.Subject,
+			socket:  socket,
+			recieve: make(chan []byte, 16),
+			room:    rm,
+		}
 
-			go client.write()
-			client.read()
-		}
-		// Join the room
-		for _, client := range match.Players {
-			rm.leave <- client
-		}
+		// join the room
+		rm.join <- c
+
+		// writer in background, reader blocks
+		go c.write()
+		c.read()
+
+		// when read() returns, ensure leave
+		rm.leave <- c
 	}
 }

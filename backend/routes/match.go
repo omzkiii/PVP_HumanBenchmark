@@ -8,7 +8,7 @@ import (
 // Match Info And Match Store\
 type MatchInfo struct {
 	ID       string
-	Players  []*client       // Store a list of authorized players
+	Players  []string       // Store a list of authorized players
 	Allowed  map[string]bool // Lookup
 	Created  time.Time
 	ExpireAt time.Time
