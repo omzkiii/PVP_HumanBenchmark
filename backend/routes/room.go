@@ -3,80 +3,74 @@ package routes
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/gorilla/websocket"
+	"strings"
+	"sync"
 )
 
-type room struct {
-	// clients holds all current clients in this room
-	clients map[*client]bool
+// Some issue exist here
+var RoomManager = struct {
+	mu    sync.Mutex
+	rooms map[string]*room
+}{rooms: make(map[string]*room)}
 
-	// join is a channel for clients withsin to join the room
-	join chan *client
-
-	// leave is a channel for clients wishin to leave the room
-	leave chan *client
-
-	// forwarr is a channel that holds inconming messages that shopuld be forwarrded to the other clients
-	forward chan []byte
-}
-
-// New Room Constructor
-func newRoom() *room {
-	return &room{
-		forward: make(chan []byte),
-		join:    make(chan *client),
-		leave:   make(chan *client),
-		clients: make(map[*client]bool),
-	}
-}
-
-func (r *room) broadcast(b []byte) {
-	// drop if slow
-	for cli := range r.clients {
-		select {
-		case cli.recieve <- b:
-		default:
+func checkPlayer(userId string, players []*client) (*client, bool) {
+	for _, player := range players {
+		if player.userID == userId {
+			return player, true
 		}
 	}
+	return nil, false
 }
 
-// event loop
-func (r *room) run(roomID string) {
-	fmt.Println("ROOM IS OPEN")
-	for {
-		select {
-		case c := <-r.join:
-			r.clients[c] = true
-			r.broadcast([]byte(fmt.Sprintf(`{"type":"system","event":"join","user":"%s"}`, c.userID)))
+func (match *MatchInfo) RoomHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("connecting to match")
 
-		case c := <-r.leave:
-			delete(r.clients, c)
-			r.broadcast([]byte(fmt.Sprintf(`{"type":"system","event":"leave","user":"%s"}`, c.userID)))
-			if len(r.clients) == 0 {
-				// delete empty room
-				RoomManager.mu.Lock()
-				delete(RoomManager.rooms, roomID)
-				RoomManager.mu.Unlock()
-				return
-			}
-
-		case msg := <-r.forward:
-			r.broadcast(msg)
+		// Dis handle rooom IDS
+		path := strings.TrimPrefix(r.URL.Path, "/room/")
+		if path == "" {
+			fmt.Println("BADREQUEST")
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
 		}
+		// only take the first segment as id
+		id := path
+		if i := strings.IndexByte(path, '/'); i >= 0 {
+			id = path[:i]
+		}
+
+		sub := r.Header.Get("userId")
+
+		// allowlist (also enforces TTL via IsAllowed)
+		client, ok := checkPlayer(sub, match.Players)
+		if !ok {
+			fmt.Println("FORBIDDED")
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+
+		socket, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			http.Error(w, "upgrade failed", http.StatusInternalServerError)
+			return
+		}
+
+		// get or create room
+		RoomManager.mu.Lock()
+		rm := RoomManager.rooms[id]
+		if rm == nil {
+			rm = newRoom()
+			RoomManager.rooms[id] = rm
+			go rm.run(id)
+		}
+		RoomManager.mu.Unlock()
+
+		client.socket = socket
+		client.room = rm
+
+		rm.join <- client
+		go client.write()
+		client.read()      // blocks until socket closes
+		rm.leave <- client // ensure leave on exit
 	}
-}
-
-// Handler that establishes websocket connection
-const (
-	socketBufferSize  = 1024
-	messageBufferSize = 256
-)
-
-var upgrader = &websocket.Upgrader{
-	ReadBufferSize:  socketBufferSize,
-	WriteBufferSize: messageBufferSize,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
 }

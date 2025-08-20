@@ -20,7 +20,7 @@ func main() {
 	// ROUTES
 	routes.Users(queries)
 	routes.Tests()
-	routes.Lobbies()
+	routes.MatchMaking()
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
