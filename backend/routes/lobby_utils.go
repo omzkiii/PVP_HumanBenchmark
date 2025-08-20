@@ -99,7 +99,7 @@ func (l *Lobby) createMatch(players []*client) {
 	l.matchStore.AddMatch(mi)
 
 	http.HandleFunc("/matches/", func(w http.ResponseWriter, r *http.Request) {
-		h := mi.RoomHandler() // from room.go
+		h := authMiddleware(mi.RoomHandler()) // from room.go
 		h.ServeHTTP(w, r)
 	})
 
@@ -133,20 +133,6 @@ func (l *Lobby) createMatch(players []*client) {
 
 func LobbyWSHandler(l *Lobby) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// VALIDATION ======================================
-		cookie, err := r.Cookie("token")
-		log.Println("Matchmaking hit for request from:", r.RemoteAddr)
-		if err != nil {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-		userID, err := validateToken(cookie.Value)
-		if err != nil {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-		// =================================
-
 		socket, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Println("upgrade error:", err)
@@ -154,7 +140,7 @@ func LobbyWSHandler(l *Lobby) http.HandlerFunc {
 		}
 
 		c := &client{
-			userID:  userID.Subject,
+			userID:  w.Header().Get("userID"),
 			socket:  socket,
 			recieve: make(chan []byte, 16),
 			room:    nil,

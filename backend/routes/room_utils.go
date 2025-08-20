@@ -21,20 +21,7 @@ func (match *MatchInfo) RoomHandler() http.HandlerFunc {
 			return
 		}
 
-		// validate cookie
-		cookie, err := r.Cookie("token")
-		if err != nil {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-		userID, err := validateToken(cookie.Value)
-		if err != nil {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-		// check match allowlist
-
-		_, ok := match.Allowed[userID.Subject]
+		_, ok := match.Allowed[w.Header().Get("userID")]
 		if !ok {
 			http.Error(w, "forbidden", http.StatusForbidden)
 			return
