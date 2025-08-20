@@ -2,15 +2,10 @@ package routes
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 	"sync"
 	"time"
-
-	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
 )
 
 type Lobby struct {
@@ -22,8 +17,8 @@ type Lobby struct {
 	quit       chan struct{}
 }
 
-// creates a new lobby for a specific pport
-func NewLobby(host string, store *MatchStore) *Lobby {
+// creates a new lobby for a specific port
+func newLobby(host string, store *MatchStore) *Lobby {
 	return &Lobby{
 		queue:      make([]*client, 0),
 		matchStore: store,
@@ -53,39 +48,6 @@ func (l *Lobby) Remove(c *client) {
 	}
 }
 
-func attemptMatchMaking(l *Lobby) {
-	var p1, p2 *client
-
-	l.mu.Lock()
-	if len(l.queue) >= 2 {
-		// take the first client
-		p1 = l.queue[0]
-
-		// find a partner with a different userID (dis is to avoid self-pair / multi-tab same user)
-		partnerIdx := -1
-		for i := 1; i < len(l.queue); i++ {
-			if l.queue[i].userID != p1.userID {
-				partnerIdx = i
-				break
-			}
-		}
-
-		// Partner Chooser
-		if partnerIdx != -1 {
-			p2 = l.queue[partnerIdx]
-			l.queue = append(l.queue[:partnerIdx], l.queue[partnerIdx+1:]...)
-			l.queue = l.queue[1:]
-		} else {
-			p1 = nil
-		}
-	}
-	l.mu.Unlock()
-
-	if p1 != nil && p2 != nil {
-		go l.createMatch([]*client{p1, p2})
-	}
-}
-
 func (l *Lobby) Run(ctx context.Context) {
 	ticker := time.NewTicker(150 * time.Millisecond)
 	defer ticker.Stop()
@@ -105,95 +67,4 @@ func (l *Lobby) Run(ctx context.Context) {
 // Stop stops the lobby loop
 func (l *Lobby) stop() {
 	close(l.quit)
-}
-
-// Dis handles match creation
-func (l *Lobby) createMatch(players []*client) {
-	matchID := uuid.NewString()
-
-	mi := &MatchInfo{
-		ID:       matchID,
-		Players:  players,
-		Created:  time.Now(),
-		ExpireAt: time.Now().Add(10 * time.Minute),
-	}
-	l.matchStore.AddMatch(mi)
-	http.Handle("/"+matchID, authMiddleware(mi.RoomHandler()))
-
-	// build ws url and path (cookies expected to be sent automatically)
-	wsURL := "ws://" + l.host + "/room/" + matchID // Websocket url
-	pagePath := "/matches/" + matchID              // React Redriect
-
-	// notify each player. Use client's recieve channel so their existing writer sends it
-	msgObj := map[string]string{
-		"action": "switch",
-		"url":    wsURL,
-		"path":   pagePath,
-		"match":  matchID,
-	}
-	data, _ := json.Marshal(msgObj)
-
-	for _, p := range players {
-		// best-effort send
-		select {
-		case p.recieve <- data:
-		default:
-			// if client.receive is full, fallback to direct write (less ideal)
-			_ = p.socket.WriteMessage(websocket.TextMessage, data)
-		}
-		// Do NOT forcibly close p.socket here; let the client initiate reconnect.
-	}
-	log.Printf("match %s created for %v\n", matchID, mi.Players)
-}
-
-//
-
-func LobbyWSHandler(l *Lobby) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		socket, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.Println("upgrade error:", err)
-			return
-		}
-
-		c := &client{
-			userID:  r.Header.Get("userID"),
-			socket:  socket,
-			recieve: make(chan []byte, 16),
-			room:    nil,
-		}
-
-		// start writer and reader
-		go c.write()
-		go func() {
-			c.read()
-			l.Remove(c)
-		}()
-
-		// If this user is already queued, reject the duplicate tab.
-		if isQueued(l, c) {
-			fmt.Println("MULTIPLE QUEUES")
-			msg := []byte(`{"action":"duplicate","reason":"already_queued"}`)
-			select {
-			case c.recieve <- msg:
-			default:
-				_ = c.socket.WriteMessage(websocket.TextMessage, msg)
-			}
-			return
-		}
-		l.Enqueue(c)
-
-		queuedMsg := map[string]string{"action": "queued"}
-		b, _ := json.Marshal(queuedMsg)
-		c.recieve <- b
-	}
-}
-
-func isQueued(lobby *Lobby, client *client) bool {
-	for _, c := range lobby.queue {
-		if client.userID == c.userID {
-			return true
-		}
-	}
-	return false
 }

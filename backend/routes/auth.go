@@ -70,3 +70,9 @@ func authMiddleware(next func(http.ResponseWriter, *http.Request)) http.Handler 
 		next(w, r)
 	})
 }
+
+func authHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte("authenticated"))
+}
