@@ -18,9 +18,9 @@ func Users(queries *database.Queries) {
 	http.HandleFunc("POST /signup", q.signupHandler)
 	http.HandleFunc("POST /login", q.loginHandler)
 	http.HandleFunc("POST /logout", q.logoutHandler)
-	http.Handle("GET /users", tokenMiddleware(q.getUsersHandler))
-	http.Handle("GET /auth", tokenMiddleware(authHandler))
-	http.Handle("GET /me", tokenMiddleware(q.meHandler)) // Temp func For handling single user verification
+	http.Handle("GET /users", authMiddleware(q.getUsersHandler))
+	http.Handle("GET /auth", authMiddleware(authHandler))
+	http.Handle("GET /me", authMiddleware(q.meHandler)) // Temp func For handling single user verification
 }
 
 // HANDLERS
