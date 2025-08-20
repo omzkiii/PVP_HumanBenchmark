@@ -35,7 +35,7 @@ func Lobbies() {
 			http.Error(w, "Lobby not initialized", http.StatusInternalServerError)
 			return
 		}
-		h := LobbyWSHandler(lobby) // form lobby.go
+		h := tokenMiddleware(LobbyWSHandler(lobby)) // form lobby.go
 		h.ServeHTTP(w, r)
 	})
 }
