@@ -49,7 +49,6 @@ func (l *Lobby) Enqueue(c *client) {
             return
         }
     }
-    l.queue = append(l.queue, c)
 
 	log.Printf("Mutex locked for client: %s", c.userID)
 	l.queue = append(l.queue, c)
