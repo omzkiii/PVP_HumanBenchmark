@@ -21,7 +21,7 @@ func (match *MatchInfo) RoomHandler() http.HandlerFunc {
 			return
 		}
 
-		_, ok := match.Allowed[w.Header().Get("userID")]
+		_, ok := match.Allowed[r.Header.Get("userID")]
 		if !ok {
 			http.Error(w, "forbidden", http.StatusForbidden)
 			return
