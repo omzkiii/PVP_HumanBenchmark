@@ -37,9 +37,10 @@ export default function QueuePage() {
           setTimeout(() => {
             navigate(`${msg.path}`, { state: msg.url });
           }, 3000);
-        } else {
-          console.log("Message:", msg);
-        }
+        } else if (msg.action === "duplicate") {
+          alert("Already Queued");
+          navigate("/");
+        } else console.log("Message:", msg);
       } catch (err) {
         console.log(event.data);
       }
@@ -60,6 +61,10 @@ export default function QueuePage() {
 
     //connect(`ws://localhost:3000/room`);
     connect(`ws://localhost:3000/matchmaking`);
+    return () => {
+      socket.current.close();
+      console.log("Stopped Queueing");
+    };
   }, []); // Empty makes it run once
 
   return (
@@ -75,7 +80,15 @@ export default function QueuePage() {
           <span> E </span>
           <span> R </span> <span> S </span>
         </h1>
-        <button onClick={() => socket.current?.close()}> Leave Queue </button>
+        <button
+          onClick={() => {
+            socket.current?.close();
+            navigate("/");
+          }}
+        >
+          {" "}
+          Leave Queue{" "}
+        </button>
         <div className="Wave">
           <ul>
             <li> </li>
