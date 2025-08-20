@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
 	"github.com/omzkiii/PVP_HumanBenchmark/backend/database"
+	"github.com/omzkiii/PVP_HumanBenchmark/backend/redis"
 	"github.com/omzkiii/PVP_HumanBenchmark/backend/routes"
 
 	"github.com/rs/cors"
@@ -14,13 +16,17 @@ func main() {
 	// Database
 	dbpool := database.Init()
 	defer dbpool.Close()
-
 	queries := database.New(dbpool)
+
+	// Redis
+	rdClient := redis.Init()
+	defer rdClient.Close()
+	defer rdClient.FlushAll(context.Background())
 
 	// ROUTES
 	routes.Users(queries)
 	routes.Tests()
-	routes.MatchMaking()
+	routes.MatchMaking(rdClient)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},

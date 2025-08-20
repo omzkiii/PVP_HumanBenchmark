@@ -3,12 +3,14 @@ package routes
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/redis/go-redis/v9"
 )
 
 var (
@@ -16,10 +18,12 @@ var (
 	lobby       *Lobby
 	matchStore  *MatchStore
 	lobbyCancel context.CancelFunc
+	RDClient    *redis.Client
 )
 
-func initLobbyOnce() {
+func initLobbyOnce(rdClient *redis.Client) {
 	once.Do(func() {
+		RDClient = rdClient
 		matchStore = NewMatchStore(10 * time.Minute)
 		lobby = newLobby("localhost:3000", matchStore)
 		ctx, cancel := context.WithCancel(context.Background())
@@ -31,9 +35,9 @@ func initLobbyOnce() {
 
 // Websocket / match endpoints - use closures that capture lobby / matchStore
 
-func MatchMaking() {
+func MatchMaking(rdClient *redis.Client) {
 	http.HandleFunc("/matchmaking", func(w http.ResponseWriter, r *http.Request) {
-		initLobbyOnce() // Lobby must initialzie once
+		initLobbyOnce(rdClient) // Lobby must initialzie once
 		if lobby == nil {
 			http.Error(w, "Lobby not initialized", http.StatusInternalServerError)
 			return
@@ -62,6 +66,9 @@ func matchMakingHandler(l *Lobby) http.HandlerFunc {
 		go c.write()
 		go func() {
 			c.read()
+
+			// NOTE:TESTING REDIS
+			// RDClient.HDel(context.Background(), "queue", c.userID)
 			l.Remove(c)
 		}()
 
@@ -75,7 +82,16 @@ func matchMakingHandler(l *Lobby) http.HandlerFunc {
 			}
 			return
 		}
+		// NOTE:TESTING REDIS
+		RDClient.SAdd(context.Background(), "queue", c.userID)
 		l.Enqueue(c)
+
+		// NOTE: TESTING REDIS
+		queue, err := RDClient.SMembers(context.Background(), "queue").Result()
+		fmt.Println("::::::::::::::::::::::::::::::::::::::::::::;")
+		fmt.Println(queue)
+		fmt.Println(err)
+		fmt.Println("::::::::::::::::::::::::::::::::::::::::::::;")
 
 		queuedMsg := map[string]string{"action": "queued"}
 		b, _ := json.Marshal(queuedMsg)
