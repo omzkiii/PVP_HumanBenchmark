@@ -98,14 +98,14 @@ func (l *Lobby) createMatch(players []*client) {
 	}
 	l.matchStore.AddMatch(mi)
 
-	http.HandleFunc("/matches/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/"+matchID, func(w http.ResponseWriter, r *http.Request) {
 		h := authMiddleware(mi.RoomHandler()) // from room.go
 		h.ServeHTTP(w, r)
 	})
 
 	// build ws url and path (cookies expected to be sent automatically)
-	wsURL := "ws://" + l.host + "/room/" + matchID // Websocket url
-	pagePath := "/matches/" + matchID              // React Redriect
+	wsURL := "ws://" + l.host + "/" + matchID // Websocket url
+	pagePath := "/matches/" + matchID         // React Redriect
 
 	// notify each player. Use client's recieve channel so their existing writer sends it
 	msgObj := map[string]string{
