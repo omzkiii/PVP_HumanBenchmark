@@ -25,11 +25,11 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func Connector() {
-	//fmt.Println("Registering /room WebSocket endpoint")
+	// fmt.Println("Registering /room WebSocket endpoint")
 
-	//r := newRoom()
-	//http.Handle("/room", r)
+	// r := newRoom()
+	// http.Handle("/room", r)
 
 	// Runs room GoRoutine Instanitate
-	//go r.run()
+	// go r.run()
 }
