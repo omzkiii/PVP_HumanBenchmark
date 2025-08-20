@@ -9,14 +9,12 @@ import (
 
 // Inbound messages, DIS handles in client message flwo
 type Inbound struct {
-	Type string		`json:"type"`
-	Action string   `json:"action,omitempty"`
+	Type    string          `json:"type"`
+	Action  string          `json:"action,omitempty"`
 	Payload json.RawMessage `json:"payload,omitempty"`
 	Seq     uint64          `json:"seq,omitempty"`
 	Text    string          `json:"text,omitempty"`
 }
-
-
 
 // the server-side representation of a connected user session
 type client struct { // Like an object
@@ -48,39 +46,37 @@ func (c *client) read() {
 			var inbInst Inbound // declare emptyInbound
 			if err := json.Unmarshal(raw, &inbInst); err == nil && inbInst.Type != "" {
 				switch inbInst.Type {
-					case "chat":
-						//Send normal chat json
-						msg := map[string]any {
-							"type": "chat",
-							"from": c.userID,
-							"text": inbInst.Text,
-							"ts":   time.Now().UTC().Format(time.RFC3339Nano),
-						}
+				case "chat":
+					// Send normal chat json
+					msg := map[string]any{
+						"type": "chat",
+						"from": c.userID,
+						"text": inbInst.Text,
+						"ts":   time.Now().UTC().Format(time.RFC3339Nano),
+					}
 
-						b, _ := json.Marshal(msg) //extract json
-						c.room.forward <- b
-						
-					case "action":
-						//Send action json
-						output := map[string]any {
-							"type": "action",
-							"from": c.userID,
-							"action":  inbInst.Action,
-							"payload": json.RawMessage(inbInst.Payload),
-							"seq":     inbInst.Seq,
-							"ts":      time.Now().UTC().Format(time.RFC3339Nano),
-						}
+					b, _ := json.Marshal(msg) // extract json
+					c.room.forward <- b
 
-						b, _ := json.Marshal(output) //extract json
-						c.room.forward <- b
-					default:
+				case "action":
+					// Send action json
+					output := map[string]any{
+						"type":    "action",
+						"from":    c.userID,
+						"action":  inbInst.Action,
+						"payload": json.RawMessage(inbInst.Payload),
+						"seq":     inbInst.Seq,
+						"ts":      time.Now().UTC().Format(time.RFC3339Nano),
+					}
+
+					b, _ := json.Marshal(output) // extract json
+					c.room.forward <- b
+				default:
 				}
-
 				continue
 			}
 
-
-			//Ultimate ELSE CATCHER, if all checks fail just treat as normal
+			// Ultimate ELSE CATCHER, if all checks fail just treat as normal
 			msg := map[string]any{
 				"type": "chat",
 				"from": c.userID,
@@ -89,7 +85,7 @@ func (c *client) read() {
 			}
 			b, _ := json.Marshal(msg)
 			c.room.forward <- b
-			
+
 		}
 
 	}

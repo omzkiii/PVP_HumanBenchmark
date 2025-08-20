@@ -111,26 +111,18 @@ func (l *Lobby) stop() {
 func (l *Lobby) createMatch(players []*client) {
 	matchID := uuid.NewString()
 
-	// Convert []*client -> []string
-	playerIDs := make([]string, len(players))
-	allowed := make(map[string]bool)
-	for i, p := range players {
-		playerIDs[i] = p.userID
-		allowed[p.userID] = true
-	}
-
 	mi := &MatchInfo{
 		ID:       matchID,
-		Players:  playerIDs,
-		Allowed:  allowed,
+		Players:  players,
 		Created:  time.Now(),
 		ExpireAt: time.Now().Add(10 * time.Minute),
 	}
 	l.matchStore.AddMatch(mi)
+	http.Handle("/"+matchID, authMiddleware(mi.RoomHandler()))
 
 	// build ws url and path (cookies expected to be sent automatically)
-	wsURL := "ws://" + l.host + "/" + matchID // Websocket url
-	pagePath := "/matches/" + matchID         // React Redriect
+	wsURL := "ws://" + l.host + "/room/" + matchID // Websocket url
+	pagePath := "/matches/" + matchID              // React Redriect
 
 	// notify each player. Use client's recieve channel so their existing writer sends it
 	msgObj := map[string]string{

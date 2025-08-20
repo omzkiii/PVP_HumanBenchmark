@@ -144,7 +144,7 @@ func (q *db) loginHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
 		Value:    token,
-		Expires:  time.Now().Add(5 * time.Minute),
+		Expires:  time.Now().Add(5 * time.Hour),
 		HttpOnly: true,
 		Secure:   false,
 		Path:     "/",
