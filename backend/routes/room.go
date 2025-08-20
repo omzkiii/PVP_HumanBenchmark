@@ -41,6 +41,7 @@ func (r *room) broadcast(b []byte) {
 
 // event loop
 func (r *room) run(roomID string) {
+	fmt.Println("ROOM IS OPEN")
 	for {
 		select {
 		case c := <-r.join:

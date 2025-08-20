@@ -35,7 +35,7 @@ export default function QueuePage() {
           socket.current.close();
           connect(msg.url);
           setTimeout(() => {
-            navigate(`${msg.path}`);
+            navigate(`${msg.path}`, { state: msg.url });
           }, 3000);
         } else {
           console.log("Message:", msg);

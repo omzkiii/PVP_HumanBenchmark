@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"sync"
@@ -12,12 +13,23 @@ var RoomManager = struct {
 	rooms map[string]*room
 }{rooms: make(map[string]*room)}
 
+func checkPlayer(userId string, players []*client) (*client, bool) {
+	for _, player := range players {
+		if player.userID == userId {
+			return player, true
+		}
+	}
+	return nil, false
+}
+
 func RoomHandler(store *MatchStore) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("connecting to match")
 
         // Dis handle rooom IDS
         path := strings.TrimPrefix(r.URL.Path, "/room/")
         if path == "" {
+			fmt.Println("BADREQUEST")
             http.Error(w, "bad request", http.StatusBadRequest)
             return
         }
@@ -45,6 +57,12 @@ func RoomHandler(store *MatchStore) http.HandlerFunc {
             return
         }
 
+		socket, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			http.Error(w, "upgrade failed", http.StatusInternalServerError)
+			return
+		}
+
         // get or create room
         RoomManager.mu.Lock()
         rm := RoomManager.rooms[id]
@@ -55,12 +73,6 @@ func RoomHandler(store *MatchStore) http.HandlerFunc {
         }
         RoomManager.mu.Unlock()
 
-        socket, err := upgrader.Upgrade(w, r, nil)
-        if err != nil {
-            http.Error(w, "upgrade failed", http.StatusInternalServerError)
-            return
-        }
-		
         c := &client{
             userID:  sub.Subject,
             socket:  socket,

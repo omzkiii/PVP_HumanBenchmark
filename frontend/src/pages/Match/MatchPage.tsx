@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 export default function MatchPage() {
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
 
   const matchSocket = useRef<WebSocket | null>(null);

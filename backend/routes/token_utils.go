@@ -38,7 +38,7 @@ func createToken(w http.ResponseWriter, username string) string {
 	return token
 }
 
-func tokenMiddleware(next func(http.ResponseWriter, *http.Request)) http.Handler {
+func authMiddleware(next func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.Cookie("token")
 		req_token, err := r.Cookie("token")
@@ -66,6 +66,7 @@ func tokenMiddleware(next func(http.ResponseWriter, *http.Request)) http.Handler
 			return
 		}
 
+		r.Header.Add("userID", req_claims.Subject)
 		next(w, r)
 	})
 }
