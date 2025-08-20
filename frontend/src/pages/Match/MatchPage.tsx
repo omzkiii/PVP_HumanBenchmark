@@ -61,7 +61,6 @@ export default function MatchPage() {
     };
   }, [id]);
 
-  
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const ws = matchSocket.current;
@@ -84,7 +83,14 @@ export default function MatchPage() {
         <input type="submit" value="Send" disabled={!connected} />
       </form>
 
-      <pre style={{ marginTop: 12, padding: 8, background: "#f7f7f7", borderRadius: 6 }}>
+      <pre
+        style={{
+          marginTop: 12,
+          padding: 8,
+          background: "#f7f7f7",
+          borderRadius: 6,
+        }}
+      >
         {JSON.stringify({ connected, lastMessage }, null, 2)}
       </pre>
     </>
