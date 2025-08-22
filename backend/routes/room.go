@@ -1,10 +1,13 @@
 package routes
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 	"sync"
+
+	"github.com/gorilla/websocket"
 )
 
 // Some issue exist here
@@ -48,6 +51,20 @@ func (match *MatchInfo) RoomHandler() http.HandlerFunc {
 			http.Error(w, "forbidden", http.StatusForbidden)
 			return
 		}
+
+		you := map[string]any{
+			"type":  "you",
+			"userId": client.userID,
+			"match":  id,
+		}
+		if b, err := json.Marshal(you); err == nil {
+			select {
+			case client.recieve <- b:
+			default:
+				_ = client.socket.WriteMessage(websocket.TextMessage, b)
+			}
+		}
+
 
 		socket, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {

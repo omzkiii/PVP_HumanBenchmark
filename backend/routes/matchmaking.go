@@ -72,6 +72,19 @@ func matchMakingHandler(l *Lobby) http.HandlerFunc {
 			l.Remove(c)
 		}()
 
+		you := map[string]any{
+			"type":   "you",
+			"phase":  "queue",
+			"userId": c.userID,
+		}
+		if b, err := json.Marshal(you); err == nil {
+			select {
+			case c.recieve <- b:
+			default:
+				_ = c.socket.WriteMessage(websocket.TextMessage, b)
+			}
+		}
+
 		// If this user is already queued, reject the duplicate tab.
 		if isQueued(l, c) {
 			msg := []byte(`{"action":"duplicate","reason":"already_queued"}`)
