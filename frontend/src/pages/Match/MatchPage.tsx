@@ -47,7 +47,7 @@ export default function MatchPage() {
   useEffect(() => {
     if (!id) return;
 
-    const ws = connect(`ws://localhost:3000/${id}`);
+    const ws = connect(`ws://localhost:3000/room/${id}`);
     matchSocket.current = ws;
 
     return () => {
