@@ -12,18 +12,16 @@ type Lobby struct {
 	mu    sync.Mutex
 	queue []*client // looks for clients
 
-	matchStore *MatchStore
-	host       string // reference to websocket / localhost
-	quit       chan struct{}
+	host string // reference to websocket / localhost
+	quit chan struct{}
 }
 
 // creates a new lobby for a specific port
-func newLobby(host string, store *MatchStore) *Lobby {
+func newLobby(host string) *Lobby {
 	return &Lobby{
-		queue:      make([]*client, 0),
-		matchStore: store,
-		host:       host,
-		quit:       make(chan struct{}),
+		queue: make([]*client, 0),
+		host:  host,
+		quit:  make(chan struct{}),
 	}
 }
 

@@ -1,11 +1,15 @@
 package routes
 
 import (
-	"sync"
+	"encoding/json"
+	"log"
+	"net/http"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
-// Match Info And Match Store\
+// Match Info\
 type MatchInfo struct {
 	ID       string
 	Players  []*client // Store a list of authorized players
@@ -13,29 +17,52 @@ type MatchInfo struct {
 	ExpireAt time.Time
 }
 
-// Handles Matches in Bulk
-type MatchStore struct {
-	mu      sync.Mutex // Mutual Exclusion for synchornization
-	matches map[string]*MatchInfo
-	ttl     time.Duration
-}
+func matchMakingHandler(l *Lobby) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		socket, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Println("upgrade error:", err)
+			return
+		}
 
-func NewMatchStore(ttl time.Duration) *MatchStore {
-	return &MatchStore{
-		matches: make(map[string]*MatchInfo), // Hashg map for type string = Match Tytpe
-		ttl:     ttl,
+		c := &client{
+			userID:  r.Header.Get("userID"),
+			socket:  socket,
+			recieve: make(chan []byte, 16),
+			room:    nil,
+		}
+
+		// start writer and reader
+		go c.write()
+		go func() {
+			c.read()
+
+			l.Remove(c)
+		}()
+
+		// If this user is already queued, reject the duplicate tab.
+		if isQueued(l, c) {
+			msg := []byte(`{"action":"duplicate","reason":"already_queued"}`)
+			select {
+			case c.recieve <- msg:
+			default:
+				_ = c.socket.WriteMessage(websocket.TextMessage, msg)
+			}
+			return
+		}
+		l.Enqueue(c)
+
+		queuedMsg := map[string]string{"action": "queued"}
+		b, _ := json.Marshal(queuedMsg)
+		c.recieve <- b
 	}
 }
 
-// Logic for finding matches
-func (s *MatchStore) AddMatch(mi *MatchInfo) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.matches[mi.ID] = mi
-}
-
-func (s *MatchStore) DeleteMatch(id string) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	delete(s.matches, id)
+func isQueued(lobby *Lobby, client *client) bool {
+	for _, c := range lobby.queue {
+		if client.userID == c.userID {
+			return true
+		}
+	}
+	return false
 }

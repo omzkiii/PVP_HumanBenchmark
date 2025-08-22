@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -36,6 +37,7 @@ func (c *client) read() {
 	// Handle in which the user is sending a message to the room
 
 	defer c.socket.Close()
+	defer fmt.Println("Socket closing...")
 	for {
 		_, raw, err := c.socket.ReadMessage()
 		if err != nil {
@@ -43,6 +45,7 @@ func (c *client) read() {
 		}
 
 		if c.room != nil {
+			defer fmt.Println("client leave")
 			var inbInst Inbound // declare emptyInbound
 			if err := json.Unmarshal(raw, &inbInst); err == nil && inbInst.Type != "" {
 				switch inbInst.Type {
