@@ -1,0 +1,178 @@
+:root {
+    --dark-clr: #1E1E1E;
+    --main-clr: #F5F7F8;
+    --sec-clr: #F4CE14;
+    --ter-clr: #495E57;
+}
+
+body, html { 
+    padding: 0;
+    margin: 0;
+    background-color: var(--main-clr);
+    font-family: 'Passion One', cursive;
+    overflow-x: hidden;
+}
+
+.MatchPage{
+    height: 100vh;
+    width: 100vw;
+    background-color: var(--dark-clr);
+    display: flex;
+    gap: 10px
+}
+
+
+
+
+/* Game Section */
+.MatchPage-Main {
+    background-color: var(--dark-clr);
+    flex-grow: 9;
+
+    display: flex;                
+    justify-content: center;     
+    align-items: center;   
+    position: relative; 
+}
+
+#Game {
+    background-color: #495e5713;
+    width: 90%;
+    height: 80%;
+    box-shadow: 1px 1px 20px rgb(0, 0, 0);
+    z-index: 1;
+
+}
+
+
+
+.overlay {
+    position: absolute;   /* positions relative to .MatchPage-Main */
+    top: 0;
+    left: 0;
+    width: 101%;
+    height: 100%;
+
+    opacity: .5;
+    
+    background: rgba(0, 0, 0, 0.6); /* semi-transparent black */
+    color: white;
+    font-size: 2rem;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    z-index: 2; /* above #Game */
+  }
+
+
+/* Chat Section */
+.MatchPage-SideBar {
+    background-color: #141414;
+    box-shadow: -30px 1px 10px #14141444;
+    flex-grow: 2;
+    padding: 2rem;
+    z-index: 1;
+}
+
+.MatchPage pre {
+}
+
+
+/* */
+#RPS {
+    width: 100%;
+    height: 100%;       
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Game View Container */
+
+#RPS .gameView-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+    flex-grow: 5;
+    background-color: var(--ter-clr);
+}
+
+
+#RPS .gameView-container #player1-action,
+#RPS .gameView-container #player2-action {
+    flex: 1 1 0;            
+    display: flex;           
+    align-items: flex-end;    
+    background: #111;
+    border: 1px solid #000;
+    height: 100%;      
+    overflow: hidden;
+}
+
+#RPS .gameView-container #player1-action {
+    justify-content: flex-start;
+  }
+  
+  #RPS .gameView-container #player2-action {
+    justify-content: flex-end;
+  }
+  
+
+#RPS .gameView-container #player2-action img {
+    transform: scaleX(-1) translateX(0);;
+    filter: grayscale(100%) brightness(0.9) contrast(1.4) !important;
+}
+
+
+#RPS .gameView-container #player1-action img,
+#RPS .gameView-container #player2-action img {
+    width: clamp(100px, 25vw, 500px);   
+  
+    filter: grayscale(30%) brightness(0.9) contrast(1.4)
+          drop-shadow(0 0 2px #000)
+          drop-shadow(0 0 6px rgba(0,0,0,0.6));
+}
+
+
+
+
+
+/* Game Action Container */
+
+.action-container {
+    flex-grow: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--dark-clr);
+}
+
+.action-container .wrapper {
+    height: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#RPS .action-container button {
+    flex: 1 1 0;
+    margin: 0 10px;
+    padding: 15px;
+    aspect-ratio: 1 / 1;     
+    font-size: clamp(1rem, 8vw, 2rem); 
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #111;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#RPS .action-container button:hover {
+    transform: translateY(10px);
+}

@@ -1,10 +1,13 @@
 package routes
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 	"sync"
+
+	"github.com/gorilla/websocket"
 )
 
 // Some issue exist here
@@ -78,6 +81,21 @@ func RoomHandler(store *MatchStore) http.HandlerFunc {
             socket:  socket,
             recieve: make(chan []byte, 16),
             room:    rm,
+        }
+
+        // Defines original user
+        you := map[string]any {
+            "type": "you",
+            "userId": c.userID,
+            "match":  id,
+        }
+
+        if b, err := json.Marshal(you); err == nil {
+            select {
+            case c.recieve <- b:
+            default:
+                _ = c.socket.WriteMessage(websocket.TextMessage, b)
+            }
         }
 
         rm.join <- c

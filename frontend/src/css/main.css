@@ -122,6 +122,14 @@ a {
     flex-direction: column;
 }
 
+.LandingPage-Container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2vh;
+}
+
 .LandingPage div {
     width: 50vw;
     text-align: center;
@@ -172,6 +180,12 @@ a {
 }
 
 
+.battles-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* space between square and text */
+}
 
 .battles-yellow {
     background: linear-gradient(#1e1e1e, #f4cf14);
@@ -185,14 +199,6 @@ a {
         1px -1px 0 #1E1E1E,
        -1px  1px 0 #f4cf14;
 }
-.battles-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem; /* space between square and text */
-    
-}
-
 
 .battle-square {
     width: 3rem;
