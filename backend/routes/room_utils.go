@@ -57,6 +57,7 @@ func (r *room) run(roomID string) {
 				// delete empty room
 				RoomManager.mu.Lock()
 				delete(RoomManager.rooms, roomID)
+				// TODO: write the match to database
 				RoomManager.mu.Unlock()
 				return
 			}

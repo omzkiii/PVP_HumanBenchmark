@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -16,16 +17,24 @@ var RoomManager = struct {
 	rooms map[string]*room
 }{rooms: make(map[string]*room)}
 
-func checkPlayer(userId string, players []*client) (*client, bool) {
-	for _, player := range players {
-		if player.userID == userId {
-			return player, true
-		}
+func checkPlayer(userId string, matchID string) bool {
+	match, err := RDClient.HGetAll(context.Background(), "match:"+matchID).Result()
+	fmt.Println("------------REDIS--------")
+	fmt.Println(match)
+	fmt.Println(match["player2"])
+	fmt.Println("-------------------------")
+	fmt.Println(userId)
+	if err != nil {
+		fmt.Println("Redis HGet error: cannot get match")
+		return false
 	}
-	return nil, false
+	if match["player1"] == userId || match["player2"] == userId {
+		return true
+	}
+	return false
 }
 
-func (match *MatchInfo) RoomHandler() http.HandlerFunc {
+func RoomHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("connecting to match")
 
@@ -45,24 +54,11 @@ func (match *MatchInfo) RoomHandler() http.HandlerFunc {
 		sub := r.Header.Get("userId")
 
 		// allowlist (also enforces TTL via IsAllowed)
-		client, ok := checkPlayer(sub, match.Players)
+		ok := checkPlayer(sub, id)
 		if !ok {
 			fmt.Println("FORBIDDED")
 			http.Error(w, "forbidden", http.StatusForbidden)
 			return
-		}
-
-		you := map[string]any{
-			"type":  "you",
-			"userId": client.userID,
-			"match":  id,
-		}
-		if b, err := json.Marshal(you); err == nil {
-			select {
-			case client.recieve <- b:
-			default:
-				_ = client.socket.WriteMessage(websocket.TextMessage, b)
-			}
 		}
 
 
@@ -82,12 +78,32 @@ func (match *MatchInfo) RoomHandler() http.HandlerFunc {
 		}
 		RoomManager.mu.Unlock()
 
-		client.socket = socket
-		client.room = rm
+		client := &client{
+			userID:  r.Header.Get("userID"),
+			socket:  socket,
+			recieve: make(chan []byte, 16),
+			room:    rm,
+		}
+
+		
+		you := map[string]any{
+			"type":  "you",
+			"userId": client.userID,
+			"match":  id,
+		}
+		if b, err := json.Marshal(you); err == nil {
+			select {
+			case client.recieve <- b:
+			default:
+				_ = client.socket.WriteMessage(websocket.TextMessage, b)
+			}
+		}
+
 
 		rm.join <- client
 		go client.write()
 		client.read()      // blocks until socket closes
 		rm.leave <- client // ensure leave on exit
+		fmt.Println("disconnecting to match")
 	}
 }
