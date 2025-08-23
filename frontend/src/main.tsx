@@ -11,6 +11,7 @@ import NotFoundPage from "./pages/NotFoundPage.tsx";
 import ProfilePage from "./pages/Profile/Profile.tsx";
 import BattlesPage from "./pages/Battles/Battles.tsx";
 import AuthHelper from "./API/AuthHelper.tsx";
+import Test from "./pages/Test.tsx";
 
 //React Router Definition
 const router = createBrowserRouter([
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "/battles",
         element: <BattlesPage />,
+      },
+      {
+        path: "/test",
+        element: <Test />,
       },
     ],
   },

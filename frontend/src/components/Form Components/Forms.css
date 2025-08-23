@@ -1,60 +1,58 @@
 :root {
-    --dark-clr: #1E1E1E;
-    --main-clr: #F5F7F8;
-    --sec-clr: #F4CE14;
-    --ter-clr: #495E57;
+  --dark-clr: #1e1e1e;
+  --main-clr: #f5f7f8;
+  --sec-clr: #f4ce14;
+  --ter-clr: #495e57;
 }
 
-
 .Form-modal {
-    background-color: var(--dark-clr);
-    width: 15vw;
-    height: 30vh;
-    padding: 1.2rem 0.8rem 1.2rem 0.8rem;
-    color: var(--main-clr);
+  background-color: var(--dark-clr);
+  width: 15vw;
+  height: 30vh;
+  padding: 1.2rem 0.8rem 1.2rem 0.8rem;
+  color: var(--main-clr);
 }
 
 .Form-modal h1 {
-    text-align: center;
+  text-align: center;
 }
 
-
 .Form-modal .wrap {
-    margin:15px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 10px;
+  margin: 15px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .Form-modal .wrap input {
-    margin-left: 10px
+  margin-left: 10px;
 }
 
 .Form-modal .wrap button {
-    width: 100%;
-    background-color: var(--ter-clr);
-    opacity: 1;
-    color: var(--main-clr);
-    padding: 5px;
-    border-radius: 5px;
+  width: 100%;
+  background-color: var(--ter-clr);
+  opacity: 1;
+  color: var(--main-clr);
+  padding: 5px;
+  border-radius: 5px;
 }
 
 .Form-modal .wrap button:hover {
-   cursor: pointer;
-   opacity: 0.5;
+  cursor: pointer;
+  opacity: 0.5;
 }
 
 .exitBtn {
-    background: transparent;
-    border: none;
-    font-weight: bold;
-    font-size: 1rem;   
-    color: var(--main-clr);
-    cursor: pointer;
-    
-  }
-  
-  .exitBtn:hover {
-    color: var(--sec-clr);  /* highlight on hover */
-  }
+  background: transparent;
+  border: none;
+  font-weight: bold;
+  font-size: 1rem;
+  color: var(--main-clr);
+  cursor: pointer;
+}
+
+.exitBtn:hover {
+  color: var(--sec-clr); /* highlight on hover */
+}
+
