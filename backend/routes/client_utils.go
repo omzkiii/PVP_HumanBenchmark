@@ -13,6 +13,7 @@ type Inbound struct {
 	Type    string          `json:"type"`
 	Action  string          `json:"action,omitempty"`
 	Payload json.RawMessage `json:"payload,omitempty"`
+	Game    string          `json:"game,omitempty"`
 	Seq     uint64          `json:"seq,omitempty"`
 	Text    string          `json:"text,omitempty"`
 }
@@ -68,6 +69,7 @@ func (c *client) read() {
 						"from":    c.userID,
 						"action":  inbInst.Action,
 						"payload": json.RawMessage(inbInst.Payload),
+						"game":    inbInst.Game,
 						"seq":     inbInst.Seq,
 						"ts":      time.Now().UTC().Format(time.RFC3339Nano),
 					}
