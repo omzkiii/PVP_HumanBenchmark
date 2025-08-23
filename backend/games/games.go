@@ -7,20 +7,20 @@ import (
 )
 
 type message struct {
-	Type    string            `json:"type"`
-	From    string            `json:"from"`
-	Action  string            `json:"action"`
-	Payload map[string]string `json:"payload"`
-	Game    string            `json:"game"`
-	Seq     int               `json:"seq"`
-	Ts      time.Time         `json:"ts"`
+	Type    string         `json:"type"`
+	From    string         `json:"from"`
+	Action  string         `json:"action"`
+	Payload map[string]any `json:"payload"`
+	Game    string         `json:"game"`
+	Seq     int            `json:"seq"`
+	Ts      time.Time      `json:"ts"`
 }
 
 type game_data struct {
 	player  string
 	action  string
 	seq     int
-	payload map[string]string
+	payload map[string]any
 	ts      time.Time
 }
 
