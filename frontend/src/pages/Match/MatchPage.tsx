@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import "./MatchPage.css";
 
-
-
 export default function MatchPage() {
   const { id } = useParams<{ id: string }>();
   const [me, setMe] = useState<string | null>(null);
-  const [rps, setRps] = useState<{ picks: Record<string, string | null> }>({ picks: {} });
+  const [rps, setRps] = useState<{ picks: Record<string, string | null> }>({
+    picks: {},
+  });
 
   const matchSocket = useRef<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
@@ -35,9 +35,9 @@ export default function MatchPage() {
         }
 
         if (parsed.type == "action" && parsed.game == "rps") {
-          const from = parsed.from as string // Check the userID
+          const from = parsed.from as string; // Check the userID
           const choice = parsed.payload?.choice ?? null;
-          setRps(prev => ({ picks: { ...prev.picks, [from]: choice } }));
+          setRps((prev) => ({ picks: { ...prev.picks, [from]: choice } }));
           return;
         }
 
@@ -68,7 +68,6 @@ export default function MatchPage() {
     const ws = connect(`ws://localhost:3000/room/${id}`);
     matchSocket.current = ws;
 
-
     return () => {
       try {
         ws.close();
@@ -79,7 +78,6 @@ export default function MatchPage() {
     };
   }, [id, me]);
 
-  
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const ws = matchSocket.current;
@@ -90,7 +88,6 @@ export default function MatchPage() {
     }
   };
 
-
   const seqRef = useRef(0); // Current Sequence
   const actionFunction = (action: string, payload?: any, game?: string) => {
     // Create function for determinig action:
@@ -99,42 +96,66 @@ export default function MatchPage() {
       console.log("Issue Connecting to websocket");
       return;
     }
-    ws.send(JSON.stringify({type: "action", action, payload, game, seq: ++seqRef.current})) // send to websocket
-  }
-
-
+    ws.send(
+      JSON.stringify({
+        type: "action",
+        action,
+        payload,
+        game,
+        seq: ++seqRef.current,
+      }),
+    ); // send to websocket
+  };
 
   return (
     <>
       <div className="MatchPage">
-        <div className="MatchPage-Main"> 
+        <div className="MatchPage-Main">
           <div id="Game">
-            
             {/* Rock, Paper, Scissors Game */}
             <div id="RPS">
-              <div className="gameView-container">  
-                <div id="player1-action"> 
-                  <img src="/images/paper.png" alt="player 1 action" ></img>
+              <div className="gameView-container">
+                <div id="player1-action">
+                  <img src="/images/paper.png" alt="player 1 action"></img>
                 </div>
-                <div id="player2-action">   
-                <img src="/images/rock.png" alt="player 1 action"></img>
+                <div id="player2-action">
+                  <img src="/images/rock.png" alt="player 1 action"></img>
                 </div>
               </div>
               <div className="action-container">
-                <div className="wrapper">  
-                  <button disabled={!connected} onClick={() => {actionFunction("throw", { choice: "rock" }, "rps");}}> 🪨 </button>
-                  <button disabled={!connected} onClick={() => {actionFunction("throw", { choice: "paper" }, "rps");}}> 📄 </button>
-                  <button  disabled={!connected} onClick={() => {actionFunction("throw", { choice: "scissors" }, "rps");}}> ✂️ </button>
+                <div className="wrapper">
+                  <button
+                    disabled={!connected}
+                    onClick={() => {
+                      actionFunction("throw", { choice: "rock" }, "rps");
+                    }}
+                  >
+                    {" "}
+                    🪨{" "}
+                  </button>
+                  <button
+                    disabled={!connected}
+                    onClick={() => {
+                      actionFunction("throw", { choice: "paper" }, "rps");
+                    }}
+                  >
+                    {" "}
+                    📄{" "}
+                  </button>
+                  <button
+                    disabled={!connected}
+                    onClick={() => {
+                      actionFunction("throw", { choice: "scissors" }, "rps");
+                    }}
+                  >
+                    {" "}
+                    ✂️{" "}
+                  </button>
                 </div>
-                
               </div>
             </div>
-            
-
-          </div>  
-          <div className="">
           </div>
-
+          <div className=""></div>
         </div>
 
         <div className="MatchPage-SideBar">
@@ -147,19 +168,18 @@ export default function MatchPage() {
             />
             <input type="submit" value="Send" disabled={!connected} />
           </form>
-            <pre
-          style={{
-            marginTop: 12,
-            padding: 8,
-            background: "#f7f7f7",
-            borderRadius: 6,
-          }}
-        >
-          {JSON.stringify({ connected, lastMessage }, null, 2)}
-        </pre>
-       </div>
-
-       </div>
+          <pre
+            style={{
+              marginTop: 12,
+              padding: 8,
+              background: "#f7f7f7",
+              borderRadius: 6,
+            }}
+          >
+            {JSON.stringify({ connected, lastMessage }, null, 2)}
+          </pre>
+        </div>
+      </div>
     </>
   );
 }
