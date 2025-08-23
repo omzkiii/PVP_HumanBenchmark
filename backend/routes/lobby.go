@@ -53,7 +53,7 @@ func createMatch(l *Lobby, players []*client) {
 		Created:  time.Now(),
 		ExpireAt: time.Now().Add(10 * time.Minute),
 	}
-	RDClient.HSet(context.Background(), "match:"+matchID, "player1", players[0].userID, "player2", players[1].userID)
+	RDClient.HSet(context.Background(), "match:"+matchID, "matchID", matchID, "player1", players[0].userID, "player2", players[1].userID)
 
 	// build ws url and path (cookies expected to be sent automatically)
 	wsURL := "ws://" + l.host + "/room/" + matchID // Websocket url
