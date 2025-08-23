@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/omzkiii/PVP_HumanBenchmark/backend/games"
 )
 
 type room struct {
@@ -63,6 +64,7 @@ func (r *room) run(roomID string) {
 			}
 
 		case msg := <-r.forward:
+			games.Handle(msg)
 			r.broadcast(msg)
 		}
 	}
