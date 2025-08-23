@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         element: <BattlesPage />,
       },
       {
-        path: "/test",
+        path: "/test/:id",
         element: <Test />,
       },
     ],
