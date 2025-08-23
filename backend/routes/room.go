@@ -61,7 +61,6 @@ func RoomHandler() http.HandlerFunc {
 			return
 		}
 
-
 		socket, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			http.Error(w, "upgrade failed", http.StatusInternalServerError)
@@ -85,9 +84,8 @@ func RoomHandler() http.HandlerFunc {
 			room:    rm,
 		}
 
-		
 		you := map[string]any{
-			"type":  "you",
+			"type":   "you",
 			"userId": client.userID,
 			"match":  id,
 		}
@@ -98,7 +96,6 @@ func RoomHandler() http.HandlerFunc {
 				_ = client.socket.WriteMessage(websocket.TextMessage, b)
 			}
 		}
-
 
 		rm.join <- client
 		go client.write()
