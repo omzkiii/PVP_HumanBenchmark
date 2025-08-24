@@ -83,6 +83,9 @@ func RoomHandler() http.HandlerFunc {
 			recieve: make(chan []byte, 16),
 			room:    rm,
 		}
+		
+
+		
 
 		you := map[string]any{
 			"type":   "you",

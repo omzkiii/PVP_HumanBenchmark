@@ -1,7 +1,10 @@
 package routes
 
 import (
+	"crypto/rand"
+	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -20,6 +23,9 @@ type room struct {
 
 	// forwarr is a channel that holds inconming messages that shopuld be forwarrded to the other clients
 	forward chan []byte
+
+
+	seats []string
 }
 
 // New Room Constructor
@@ -50,6 +56,24 @@ func (r *room) run(roomID string) {
 		case c := <-r.join:
 			r.clients[c] = true
 			r.broadcast([]byte(fmt.Sprintf(`{"type":"system","event":"join","user":"%s"}`, c.userID)))
+			
+
+			// define order of who goes first
+			if len(r.clients) == 2 && len(r.seats) == 0 {
+				ids := make([]string, 0, 2)
+				for cli := range r.clients {
+					ids = append(ids, cli.userID)
+				}
+
+				r.seats = shuffle(ids)
+
+				plyrOrder := map[string]any{
+					"type": "Player Order",
+					"seats": r.seats,
+				}
+				b, _ := json.Marshal(plyrOrder)
+				r.broadcast(b)
+			}
 
 		case c := <-r.leave:
 			delete(r.clients, c)
@@ -68,6 +92,16 @@ func (r *room) run(roomID string) {
 			r.broadcast(msg)
 		}
 	}
+}
+
+
+func shuffle(ids []string) []string {
+    if len(ids) != 2 { return ids }
+    n, _ := rand.Int(rand.Reader, big.NewInt(2)) // 0 or 1
+    if n.Int64() == 1 {
+        ids[0], ids[1] = ids[1], ids[0]
+    }
+    return ids
 }
 
 // Handler that establishes websocket connection

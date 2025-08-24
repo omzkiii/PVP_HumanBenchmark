@@ -80,7 +80,9 @@ func (c *client) read() {
 				}
 				continue
 			}
+			
 
+			
 			// Ultimate ELSE CATCHER, if all checks fail just treat as normal
 			msg := map[string]any{
 				"type": "chat",
