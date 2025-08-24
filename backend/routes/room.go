@@ -77,8 +77,11 @@ func RoomHandler() http.HandlerFunc {
 		}
 		RoomManager.mu.Unlock()
 
+
+		ID := r.Header.Get("userID");
+
 		client := &client{
-			userID:  r.Header.Get("userID"),
+			userID: ID,
 			socket:  socket,
 			recieve: make(chan []byte, 16),
 			room:    rm,

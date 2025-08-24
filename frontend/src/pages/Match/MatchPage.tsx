@@ -5,7 +5,20 @@ import RPS from "../../components/Games/RPS";
 import TicTacToe from "../../components/Games/TicTacToe";
 
 
+
+
 /** GAME CONTEXT CAN EXPAND IF NEEDED */
+
+
+
+type GameId = 'ttt' | 'rps';
+type GameEntry = { Comp: React.ComponentType; label: string };
+
+const GAMES: Record<GameId, GameEntry> = {
+  ttt: { Comp: TicTacToe, label: 'Tic-Tac-Toe' },
+  rps: { Comp: RPS,       label: 'Rock–Paper–Scissors' }
+};
+
 
 type Json =
   | string
@@ -22,6 +35,8 @@ export interface GameProponents {
   seats: string[] | undefined
   curPlayer: string | undefined
   myTurn?: boolean; 
+  lastMessage?: any
+  me?: string | null
 }
 
 
@@ -236,9 +251,14 @@ export default function MatchPage() {
 
   // Memoize context value to avoid rerenders (nOTE: jUST EDIT IF IT DOESNT WORK)
   const ctxValue = useMemo(
-    () => ({ connected, actionFunction, seqRef, seats, curPlayer, myTurn }),
-    [connected, actionFunction, seats, curPlayer, myTurn] //Recomputes if any depedency change
+    () => ({ connected, actionFunction, seqRef, seats, curPlayer, myTurn, lastMessage, me }),
+    [connected, actionFunction, seats, curPlayer, myTurn, lastMessage, me]
   );
+
+
+  // Quick Game Switch Handler
+  const [currentGame, setCurrentGame] = useState<GameId>('ttt');
+  const curGame = GAMES[currentGame];
 
 
   return (
@@ -247,10 +267,9 @@ export default function MatchPage() {
         <div className="MatchPage-Main">
           <div id="Game">
           <MatchContext.Provider value={ctxValue}>
-            {/* children here 
-              <RPS></RPS>
-            */}
-            <TicTacToe></TicTacToe>
+
+            {curGame ? <curGame.Comp key={currentGame} /> : <div>Select a game</div>}
+
           </MatchContext.Provider>
             
           </div>
