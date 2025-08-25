@@ -1,55 +1,44 @@
-import React, { useEffect, useRef, useState, createContext, type RefObject, useMemo } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  createContext,
+  type RefObject,
+  useMemo,
+} from "react";
 import { useParams } from "react-router-dom";
 import "./MatchPage.css";
 import RPS from "../../components/Games/RPS";
 import TicTacToe from "../../components/Games/TicTacToe";
 
-
-
-
 /** GAME CONTEXT CAN EXPAND IF NEEDED */
 
-
-
-type GameId = 'ttt' | 'rps';
-type GameEntry = { Comp: React.ComponentType; label: string };
+type GameId = "ttt" | "rps";
+type GameEntry = { Comp: React.ComponentType<any>; label: string };
 
 const GAMES: Record<GameId, GameEntry> = {
-  ttt: { Comp: TicTacToe, label: 'Tic-Tac-Toe' },
-  rps: { Comp: RPS,       label: 'Rock–Paper–Scissors' }
+  ttt: { Comp: TicTacToe, label: "Tic-Tac-Toe" },
+  rps: { Comp: RPS, label: "Rock–Paper–Scissors" },
 };
 
-
-type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | Json[]
-  | { [key: string]: Json };
+type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
 
 export interface GameProponents {
-  connected?: boolean
-  actionFunction?: (type: string, payload: Json, game: string) => void
-  seqRef?: RefObject<number>
-  seats: string[] | undefined
-  curPlayer: string | undefined
-  myTurn?: boolean; 
-  lastMessage?: any
-  me?: string | null
+  connected?: boolean;
+  actionFunction?: (type: string, payload: Json, game: string) => void;
+  seqRef?: RefObject<number>;
+  seats: string[] | undefined;
+  curPlayer: string | undefined;
+  myTurn?: boolean;
+  lastMessage?: any;
+  me?: string | null;
 }
 
-
-export const MatchContext = createContext<GameProponents | undefined>(undefined) // Can exapnd to parent queue for better check
-
-
-
-
-
+export const MatchContext = createContext<GameProponents | undefined>(
+  undefined,
+); // Can exapnd to parent queue for better check
 
 /** GAME CONTEXT CAN EXPAND IF NEEDED */
-
-
 
 export default function MatchPage() {
   const { id } = useParams<{ id: string }>();
@@ -57,11 +46,9 @@ export default function MatchPage() {
     picks: {},
   });
 
-
   /** ==============================  */
   //* Connection Logic Variables */
   /** ==============================  */
-
 
   const matchSocket = useRef<WebSocket | null>(null);
 
@@ -72,18 +59,24 @@ export default function MatchPage() {
   /** ==============================  */
 
   /** ==============================  */
+  //* Games Variables*/
+  /** ==============================  */
+
+  const [gameData, setGameData] = useState(null);
+  /** ==============================  */
+
+  /** ==============================  */
   //* Order Logic Variables*/
   /** ==============================  */
 
   const [me, setMe] = useState<string | null>(null);
-  const [seats, setSeats] = useState<string[] | undefined>(undefined);  
+  const [seats, setSeats] = useState<string[] | undefined>(undefined);
   const [curPlayer, setCurPlayer] = useState<string | undefined>(undefined);
   const [myTurn, setMyTurn] = useState(false);
 
   const seqRef = useRef(0); // Current Sequence
-  const didInitOrderRef = useRef(false); 
+  const didInitOrderRef = useRef(false);
   const seatsRef = useRef<string[]>([]);
-
 
   useEffect(() => {
     seatsRef.current = seats ?? [];
@@ -91,7 +84,7 @@ export default function MatchPage() {
 
   /** ==============================  */
   /** ==============================  */
-  
+
   // Keep myTurn in sync with me/curPlayer
   // First use Effect (Separated for visuals)
   useEffect(() => {
@@ -101,30 +94,23 @@ export default function MatchPage() {
   /** ==============================  */
   /** ==============================  */
 
-  function handlePlayerOrder(playerOrder : string[]) {
-
+  function handlePlayerOrder(playerOrder: string[]) {
     if (!Array.isArray(playerOrder) || playerOrder.length === 0) return;
     setSeats(playerOrder);
 
-
-    if (seqRef.current < 1)  {
+    if (seqRef.current < 1) {
       // init player order
       const first = playerOrder[0];
 
       if (!didInitOrderRef.current) {
-
         didInitOrderRef.current = true;
-        setCurPlayer(first)
-
-      } else setMyTurn(false)
-  
+        setCurPlayer(first);
+      } else setMyTurn(false);
     } else {
       // extra logic here
-
       // Once action has been sent properly switch for multople games
     }
   }
-
 
   // Connect to the room WebSocket and wire up handlers.
   function connect(wsUrl: string) {
@@ -151,24 +137,23 @@ export default function MatchPage() {
           handlePlayerOrder(parsed.seats as string[]);
           return;
         }
-        
 
         // Could Convert this to a helper function?
         if (parsed.type == "action") {
           const from: string = parsed.from;
-        
+
           // use the ref so we always have the latest seats
           const [a, b] = seatsRef.current;
           if (a && b) {
             setCurPlayer(from === a ? b : a);
           }
-        
+
           // game-specific logic
           if (parsed.game === "rps") {
           }
           if (parsed.game === "ttt") {
+            setGameData(parsed.payload);
           }
-        
         }
         //
 
@@ -248,30 +233,37 @@ export default function MatchPage() {
   /** ==============================  */
   /** ==============================  */
 
-
   // Memoize context value to avoid rerenders (nOTE: jUST EDIT IF IT DOESNT WORK)
   const ctxValue = useMemo(
-    () => ({ connected, actionFunction, seqRef, seats, curPlayer, myTurn, lastMessage, me }),
-    [connected, actionFunction, seats, curPlayer, myTurn, lastMessage, me]
+    () => ({
+      connected,
+      actionFunction,
+      seqRef,
+      seats,
+      curPlayer,
+      myTurn,
+      lastMessage,
+      me,
+    }),
+    [connected, actionFunction, seats, curPlayer, myTurn, lastMessage, me],
   );
 
-
   // Quick Game Switch Handler
-  const [currentGame, setCurrentGame] = useState<GameId>('ttt');
+  const [currentGame, setCurrentGame] = useState<GameId>("ttt");
   const curGame = GAMES[currentGame];
-
 
   return (
     <>
       <div className="MatchPage">
         <div className="MatchPage-Main">
           <div id="Game">
-          <MatchContext.Provider value={ctxValue}>
-
-            {curGame ? <curGame.Comp key={currentGame} /> : <div>Select a game</div>}
-
-          </MatchContext.Provider>
-            
+            <MatchContext.Provider value={ctxValue}>
+              {curGame ? (
+                <curGame.Comp key={currentGame} data={gameData} />
+              ) : (
+                <div>Select a game</div>
+              )}
+            </MatchContext.Provider>
           </div>
           <div className=""></div>
         </div>
