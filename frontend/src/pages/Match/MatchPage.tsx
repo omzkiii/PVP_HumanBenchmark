@@ -252,17 +252,18 @@ export default function MatchPage() {
   const [currentGame, setCurrentGame] = useState<GameId>("ttt");
   const curGame = GAMES[currentGame];
 
+  // {curGame ? (
+  //   <curGame.Comp key={currentGame} data={gameData} />
+  // ) : (
+  //   <div>Select a game</div>
+  // )}
   return (
     <>
       <div className="MatchPage">
         <div className="MatchPage-Main">
           <div id="Game">
             <MatchContext.Provider value={ctxValue}>
-              {curGame ? (
-                <curGame.Comp key={currentGame} data={gameData} />
-              ) : (
-                <div>Select a game</div>
-              )}
+              <TicTacToe data={gameData} />
             </MatchContext.Provider>
           </div>
           <div className=""></div>

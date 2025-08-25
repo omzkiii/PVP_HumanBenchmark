@@ -1,6 +1,7 @@
 package games
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
 )
@@ -10,10 +11,11 @@ import (
 /** ==============================  */
 
 type tttState struct {
-	Board  [3][3]rune
-	X      string
-	O      string
-	Next   string
+	// Board  [3][3]rune
+	X string
+	O string
+	// Next   string
+	// Symbol rune
 	Winner string
 }
 
@@ -36,65 +38,97 @@ func tictactoe(g game_data) []byte {
 		return nil
 	}
 
-	key := matchKey(g) // which "match/room" this belongs to
+	board := parseBoard(g.payload["board"].([]any))
+	state := parseState(g.payload["state"].(map[string]any))
+	sym := symbolFor(state, g.player)
+	board[row][col] = sym
 
-	tttMu.Lock()
-	defer tttMu.Unlock()
-
-	st := tttByKey[key]
-	if st == nil {
-		st = &tttState{
-			Board: [3][3]rune{
-				{'_', '_', '_'},
-				{'_', '_', '_'},
-				{'_', '_', '_'},
-			},
-			// seats assigned lazily below
-		}
-		tttByKey[key] = st
+	if isWin(board, sym) {
+		state["Winner"] = g.player
+		// gameState.Next = ""
+		fmt.Printf("%s (%c) wins\n", g.player, sym)
+	} else if isFull(board) {
+		state["Winner"] = "-"
+		// gameState.Next = ""
+		fmt.Printf("draw\n")
+	} else {
+		// // flip turn
+		// if sym == 'X' {
+		// 	gameState.Next = state.O
+		// } else {
+		// 	gameState.Next = state.X
+		// }
 	}
-
-	assignSeats(st, g.player)
-
-	if st.Winner != "" {
-		fmt.Printf("[ttt %s] ignored move from %s; game finished (winner=%s)\n", key, g.player, st.Winner)
-		return nil
+	gmsg := message{
+		Type:    "action",
+		From:    g.player,
+		Action:  "move",
+		Payload: map[string]any{"board": board, "state": state},
+		Game:    "ttt",
+		Seq:     g.seq,
+		Ts:      g.ts,
 	}
+	b, err := json.Marshal(gmsg)
+	fmt.Println(err)
+	return b
+	// key := matchKey(g) // which "match/room" this belongs to
 
-	// Turn check (optional soft validation; keeps 'recognition' accurate)
-	if st.Next != "" && st.Next != g.player {
-		fmt.Printf("[ttt %s] out-of-turn move by %s (expected %s)\n", key, g.player, st.Next)
-		return nil
-	}
+	// tttMu.Lock()
+	// defer tttMu.Unlock()
+	//
+	// st := tttByKey[key]
+	// if st == nil {
+	// 	st = &tttState{
+	// 		Board: [3][3]rune{
+	// 			{'_', '_', '_'},
+	// 			{'_', '_', '_'},
+	// 			{'_', '_', '_'},
+	// 		},
+	// 		// seats assigned lazily below
+	// 	}
+	// 	tttByKey[key] = st
+	// }
 
-	// Vacancy check
-	if st.Board[row][col] != '_' {
-		fmt.Printf("[ttt %s] cell already taken at [%d,%d] (by %c)\n", key, row, col, st.Board[row][col])
-		return nil
-	}
+	// assignSeats(st, g.player)
 
-	// Apply move
-	sym := symbolFor(st, g.player) // 'X' or 'O'
-	st.Board[row][col] = sym
+	// if st.Winner != "" {
+	// 	fmt.Printf("[ttt %s] ignored move from %s; game finished (winner=%s)\n", key, g.player, st.Winner)
+	// 	return nil
+	// }
+
+	// // Turn check (optional soft validation; keeps 'recognition' accurate)
+	// if st.Next != "" && st.Next != g.player {
+	// 	fmt.Printf("[ttt %s] out-of-turn move by %s (expected %s)\n", key, g.player, st.Next)
+	// 	return nil
+	// }
+
+	// // Vacancy check
+	// if st.Board[row][col] != '_' {
+	// 	fmt.Printf("[ttt %s] cell already taken at [%d,%d] (by %c)\n", key, row, col, st.Board[row][col])
+	// 	return nil
+	// }
+
+	// // Apply move
+	// sym := symbolFor(st, g.player) // 'X' or 'O'
+	// st.Board[row][col] = sym
 
 	// Compute winner/draw and set next
-	if isWin(st.Board, sym) {
-		st.Winner = g.player
-		st.Next = ""
-		fmt.Printf("[ttt %s] %s (%c) wins\n", key, g.player, sym)
-	} else if isFull(st.Board) {
-		st.Winner = "-"
-		st.Next = ""
-		fmt.Printf("[ttt %s] draw\n", key)
-	} else {
-		// flip turn
-		if sym == 'X' {
-			st.Next = st.O
-		} else {
-			st.Next = st.X
-		}
-	}
-	return nil
+	// if isWin(st.Board, sym) {
+	// 	st.Winner = g.player
+	// 	st.Next = ""
+	// 	fmt.Printf("[ttt %s] %s (%c) wins\n", key, g.player, sym)
+	// } else if isFull(st.Board) {
+	// 	st.Winner = "-"
+	// 	st.Next = ""
+	// 	fmt.Printf("[ttt %s] draw\n", key)
+	// } else {
+	// 	// flip turn
+	// 	if sym == 'X' {
+	// 		st.Next = st.O
+	// 	} else {
+	// 		st.Next = st.X
+	// 	}
+	// }
 }
 
 /** ==============================  */
@@ -123,28 +157,60 @@ func parsePos(v any) (int, int, bool) {
 	return int(rf), int(cf), true
 }
 
-func assignSeats(st *tttState, user string) {
-	if st.X == "" {
-		st.X = user
-		st.Next = st.X // X starts
-		return
+func parseBoard(raw []any) [3][3]string {
+	board := [3][3]string{}
+	for i, row := range raw {
+		rowSlice := row.([]any)
+		for j, val := range rowSlice {
+			// board[i][j] = []rune(val.(string))[0]
+			board[i][j] = val.(string)
+		}
 	}
-	if st.X != "" && st.O == "" && st.X != user {
-		st.O = user
-	}
+	return board
 }
 
-func symbolFor(st *tttState, user string) rune {
-	if user == st.X {
-		return 'X'
+func parseState(raw map[string]any) map[string]string {
+	state := make(map[string]string)
+	for k, v := range raw {
+		if str, ok := v.(string); ok {
+			state[k] = str
+		} else {
+			fmt.Printf("key %s is not a string value\n", k)
+		}
 	}
-	return 'O'
+	return state
 }
 
-func isFull(b [3][3]rune) bool {
+//	func assignSeats(st *tttState, user string) {
+//		if st.X == "" {
+//			st.X = user
+//			st.Next = st.X // X starts
+//			return
+//		}
+//		if st.X != "" && st.O == "" && st.X != user {
+//			st.O = user
+//		}
+//	}
+//
+//	func symbolFor(st tttState, user string) rune {
+//		if user == st.X {
+//			return 'X'
+//		}
+//		return 'O'
+//	}
+func symbolFor(st map[string]string, user string) string {
+	if st["X"] == "" || st["X"] == user {
+		st["X"] = user
+		return "X"
+	}
+	st["O"] = user
+	return "O"
+}
+
+func isFull(b [3][3]string) bool {
 	for r := 0; r < 3; r++ {
 		for c := 0; c < 3; c++ {
-			if b[r][c] == '_' {
+			if b[r][c] == "_" {
 				return false
 			}
 		}
@@ -152,7 +218,7 @@ func isFull(b [3][3]rune) bool {
 	return true
 }
 
-func isWin(b [3][3]rune, s rune) bool {
+func isWin(b [3][3]string, s string) bool {
 	lines := [8][3][2]int{
 		{{0, 0}, {0, 1}, {0, 2}},
 		{{1, 0}, {1, 1}, {1, 2}},

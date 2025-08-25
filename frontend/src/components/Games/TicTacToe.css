@@ -13,7 +13,6 @@
   position: relative;
   justify-content: center;
   align-items: center;
-
 }
 
 #TTT .holder {
@@ -23,26 +22,30 @@
 
   /* give the board a size; no vh needed */
   width: min(90%, 480px);
-  aspect-ratio: 1 / 1;      /* keeps it square */
-  margin-inline: auto;       /* center horizontally */
+  aspect-ratio: 1 / 1; /* keeps it square */
+  margin-inline: auto; /* center horizontally */
 }
 
 /* key line: make the row wrappers not affect layout */
-#TTT .holder > div { 
-  display: contents; 
+#TTT .holder > div {
+  display: contents;
 }
 
 #TTT .holder button {
-  inline-size: 100%;         /* fill the grid cell */
+  inline-size: 100%; /* fill the grid cell */
   block-size: 100%;
   background: var(--dark-clr);
   color: var(--main-clr);
   border: 0;
   font-size: clamp(1rem, 5vw, 2.5rem);
-  cursor: pointer; /* if not turn convert to unselectable pointer*/ 
+  cursor: pointer; /* if not turn convert to unselectable pointer*/
   transition: all 0.2s;
 }
 
 #TTT .holder button:hover {
   transform: translateY(5px);
 }
+#TTT .holder button:disabled {
+  background-color: red;
+}
+
