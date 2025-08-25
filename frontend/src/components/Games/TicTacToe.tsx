@@ -33,7 +33,8 @@ function TicTacToe({ data }: any) {
   const board = data?.["board"] ?? empty_board;
   const state = data?.["state"] ?? empty_state;
   const [gameData, setGameData] = useState<string[][]>(board);
-  const [gameState, setGameState] = useState<string[][]>(state);
+  const [gameState, setGameState] = useState<Record<string, string>>(state);
+  const [gameStatus, setGameStatus] = useState<string>("");
 
   // Apply opponent moves from the room broadcast
   // useEffect(() => {
@@ -65,6 +66,17 @@ function TicTacToe({ data }: any) {
     setGameState(data?.["state"] ?? state);
   }, [lastMessage, me, mySymbol, oppSymbol]);
 
+  useEffect(() => {
+    if (gameState["Winner"] === me) {
+      setGameStatus("win");
+    } else if (gameState["Winner"] === "-") {
+      setGameStatus("draw");
+    } else if (gameState["Winner"] === "") {
+      setGameStatus("");
+    } else {
+      setGameStatus("lose");
+    }
+  });
   // Send move + mark locally for snappy UI
   function onCellClick(r: number, c: number) {
     if (!myTurn || gameData[r][c] !== "_") return;
@@ -85,7 +97,7 @@ function TicTacToe({ data }: any) {
 
   return (
     <>
-      <div id="TTT">
+      <div id="TTT" game-status={gameStatus}>
         <div className="holder">
           {Array.from({ length: rows }).map((_, rowIndex) => (
             <div id={`row${rowIndex + 1}`} key={rowIndex}>
