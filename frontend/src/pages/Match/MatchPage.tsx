@@ -57,12 +57,6 @@ export default function MatchPage() {
   const [lastMessage, setLastMessage] = useState<any>(null);
 
   /** ==============================  */
-
-  /** ==============================  */
-  //* Games Variables*/
-  /** ==============================  */
-
-  const [gameData, setGameData] = useState(null);
   /** ==============================  */
 
   /** ==============================  */
@@ -152,7 +146,6 @@ export default function MatchPage() {
           if (parsed.game === "rps") {
           }
           if (parsed.game === "ttt") {
-            setGameData(parsed.payload);
           }
         }
         //
@@ -263,7 +256,11 @@ export default function MatchPage() {
         <div className="MatchPage-Main">
           <div id="Game">
             <MatchContext.Provider value={ctxValue}>
-              <TicTacToe data={gameData} />
+              {curGame ? (
+                <curGame.Comp key={currentGame} />
+              ) : (
+                <div>Select a game</div>
+              )}
             </MatchContext.Provider>
           </div>
           <div className=""></div>
