@@ -10,30 +10,30 @@ import (
 /** ==============================  */
 
 type tttState struct {
-	Board [3][3]rune
-	X     string    
-	O     string    
-	Next  string     
-	Winner string    
+	Board  [3][3]rune
+	X      string
+	O      string
+	Next   string
+	Winner string
 }
 
 var (
-	tttMu     sync.Mutex
-	tttByKey  = map[string]*tttState{} // key: match key (see matchKey())
+	tttMu    sync.Mutex
+	tttByKey = map[string]*tttState{} // key: match key (see matchKey())
 )
 
 /** ==============================  */
 // --- entry point from games.Handle ---
 /** ==============================  */
 
-func tictactoe(g game_data) {
+func tictactoe(g game_data) []byte {
 	if g.action != "move" {
-		return
+		return nil
 	}
 
 	row, col, ok := parsePos(g.payload["pos"])
 	if !ok || row < 0 || row > 2 || col < 0 || col > 2 {
-		return
+		return nil
 	}
 
 	key := matchKey(g) // which "match/room" this belongs to
@@ -58,19 +58,19 @@ func tictactoe(g game_data) {
 
 	if st.Winner != "" {
 		fmt.Printf("[ttt %s] ignored move from %s; game finished (winner=%s)\n", key, g.player, st.Winner)
-		return
+		return nil
 	}
 
 	// Turn check (optional soft validation; keeps 'recognition' accurate)
 	if st.Next != "" && st.Next != g.player {
 		fmt.Printf("[ttt %s] out-of-turn move by %s (expected %s)\n", key, g.player, st.Next)
-		return
+		return nil
 	}
 
 	// Vacancy check
 	if st.Board[row][col] != '_' {
 		fmt.Printf("[ttt %s] cell already taken at [%d,%d] (by %c)\n", key, row, col, st.Board[row][col])
-		return
+		return nil
 	}
 
 	// Apply move
@@ -94,15 +94,12 @@ func tictactoe(g game_data) {
 			st.Next = st.X
 		}
 	}
-
-
+	return nil
 }
-
 
 /** ==============================  */
 // --- helpers ---
 /** ==============================  */
-
 
 func matchKey(g game_data) string {
 	if v, ok := g.payload["matchId"]; ok {

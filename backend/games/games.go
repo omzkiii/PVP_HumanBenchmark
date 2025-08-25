@@ -24,15 +24,16 @@ type game_data struct {
 	ts      time.Time
 }
 
-func Handle(msg []byte) {
+func Handle(msg []byte) []byte {
 	data := message{}
 	if err := json.Unmarshal(msg, &data); err != nil {
 		fmt.Println("Game unmarshall error: ", err)
-		return
+		return msg
+
 	}
 
 	if data.Type != "action" {
-		return
+		return msg
 	}
 
 	g := game_data{
@@ -42,15 +43,19 @@ func Handle(msg []byte) {
 		payload: data.Payload,
 		ts:      data.Ts,
 	}
+	gmsg := []byte{}
 
 	switch data.Game {
 	case "ttt":
-		tictactoe(g)
+		gmsg = tictactoe(g)
 
 	case "rps":
 		rps(g)
 
 	default:
 		fmt.Println("unknown game")
+		gmsg = msg
+
 	}
+	return gmsg
 }
