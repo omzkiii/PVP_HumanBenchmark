@@ -35,11 +35,20 @@ func tictactoe(g game_data) []byte {
 
 	row, col, ok := parsePos(g.payload["pos"])
 	if !ok || row < 0 || row > 2 || col < 0 || col > 2 {
+		fmt.Println("TicTacToe Error: error parsing pos")
+		return nil
+	}
+	board, ok := parseBoard(g.payload["board"])
+	if !ok {
+		fmt.Println("TicTacToe Error: error parsing board")
+		return nil
+	}
+	state, ok := parseState(g.payload["state"].(map[string]any))
+	if !ok {
+		fmt.Println("TicTacToe Error: error parsing state")
 		return nil
 	}
 
-	board := parseBoard(g.payload["board"].([]any))
-	state := parseState(g.payload["state"].(map[string]any))
 	sym := symbolFor(state, g.player)
 	board[row][col] = sym
 
@@ -51,8 +60,7 @@ func tictactoe(g game_data) []byte {
 		state["Winner"] = "-"
 		// gameState.Next = ""
 		fmt.Printf("draw\n")
-	} else {
-		// // flip turn
+	} else { // // flip turn
 		// if sym == 'X' {
 		// 	gameState.Next = state.O
 		// } else {
@@ -157,28 +165,30 @@ func parsePos(v any) (int, int, bool) {
 	return int(rf), int(cf), true
 }
 
-func parseBoard(raw []any) [3][3]string {
+func parseBoard(raw any) ([3][3]string, bool) {
+	data, ok := raw.([]any)
 	board := [3][3]string{}
-	for i, row := range raw {
+	for i, row := range data {
 		rowSlice := row.([]any)
 		for j, val := range rowSlice {
 			// board[i][j] = []rune(val.(string))[0]
 			board[i][j] = val.(string)
 		}
 	}
-	return board
+	return board, ok
 }
 
-func parseState(raw map[string]any) map[string]string {
+func parseState(raw any) (map[string]string, bool) {
+	data, ok := raw.(map[string]any)
 	state := make(map[string]string)
-	for k, v := range raw {
+	for k, v := range data {
 		if str, ok := v.(string); ok {
 			state[k] = str
 		} else {
 			fmt.Printf("key %s is not a string value\n", k)
 		}
 	}
-	return state
+	return state, ok
 }
 
 //	func assignSeats(st *tttState, user string) {

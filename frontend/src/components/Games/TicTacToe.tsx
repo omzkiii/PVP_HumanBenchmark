@@ -81,13 +81,12 @@ function TicTacToe({ data }: any) {
   function onCellClick(r: number, c: number) {
     if (!myTurn || gameData[r][c] !== "_") return;
     console.log("valid move");
-    // state["Symbol"] = oppSymbol;
 
-    // setGameData((prev) => {
-    //   const next = prev.map((row) => row.slice());
-    //   next[r][c] = mySymbol;
-    //   return next;
-    // });
+    setGameData((prev) => {
+      const next = prev.map((row) => row.slice());
+      next[r][c] = mySymbol;
+      return next;
+    });
     actionFunction?.(
       "move",
       { pos: [r, c], board: gameData, state: gameState },

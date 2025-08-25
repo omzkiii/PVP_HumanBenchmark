@@ -48,6 +48,9 @@ func Handle(msg []byte) []byte {
 	switch data.Game {
 	case "ttt":
 		gmsg = tictactoe(g)
+		if gmsg == nil {
+			gmsg = msg
+		}
 
 	case "rps":
 		rps(g)
