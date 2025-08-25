@@ -3,7 +3,7 @@ import "./TicTacToe.css";
 import { Game } from "../../pages/Test";
 import { MatchContext } from "../../pages/Match/MatchPage";
 
-function TicTacToe({ data }: any) {
+function TicTacToe() {
   const matchSocket = useContext(Game);
   const mtchCtx = useContext(MatchContext);
 
@@ -30,40 +30,38 @@ function TicTacToe({ data }: any) {
     O: "",
     Winner: "",
   };
-  const board = data?.["board"] ?? empty_board;
-  const state = data?.["state"] ?? empty_state;
-  const [gameData, setGameData] = useState<string[][]>(board);
-  const [gameState, setGameState] = useState<Record<string, string>>(state);
+  const [gameData, setGameData] = useState<string[][]>(empty_board);
+  const [gameState, setGameState] =
+    useState<Record<string, string>>(empty_state);
   const [gameStatus, setGameStatus] = useState<string>("");
 
   // Apply opponent moves from the room broadcast
-  // useEffect(() => {
-  //   if (
-  //     !lastMessage ||
-  //     lastMessage.type !== "action" ||
-  //     lastMessage.game !== "ttt"
-  //   )
-  //     return;
-  //   const { from, action, payload } = lastMessage as {
-  //     from: string;
-  //     action: string;
-  //     payload: { pos: [number, number] };
-  //   };
-  //   if (action !== "move") return;
-  //   const [r, c] = payload.pos;
-  //   setGameData((prev) => {
-  //     if (!Array.isArray(prev?.[r])) return prev;
-  //     // if cell is empty, fill with opp symbol (or from's seat mapping if you prefer)
-  //     if (prev[r][c] !== "_") return prev;
-  //     const next = prev.map((row) => row.slice());
-  //     next[r][c] = from === me ? mySymbol : oppSymbol;
-  //     return next;
-  //   });
-  // }, [lastMessage, me, mySymbol, oppSymbol]);
-
   useEffect(() => {
-    setGameData(data?.["board"] ?? board);
-    setGameState(data?.["state"] ?? state);
+    if (
+      !lastMessage ||
+      lastMessage.type !== "action" ||
+      lastMessage.game !== "ttt"
+    )
+      return;
+    const { from, action, payload } = lastMessage as {
+      from: string;
+      action: string;
+      // payload: { pos: [number, number] };
+      payload: { board: string[][]; state: Record<string, string> };
+    };
+
+    if (action !== "move") return;
+    setGameData(payload.board);
+    setGameState(payload.state);
+    // const [r, c] = payload.pos;
+    // setGameData((prev) => {
+    //   if (!Array.isArray(prev?.[r])) return prev;
+    //   // if cell is empty, fill with opp symbol (or from's seat mapping if you prefer)
+    //   if (prev[r][c] !== "_") return prev;
+    //   const next = prev.map((row) => row.slice());
+    //   next[r][c] = from === me ? mySymbol : oppSymbol;
+    //   return next;
+    // });
   }, [lastMessage, me, mySymbol, oppSymbol]);
 
   useEffect(() => {
