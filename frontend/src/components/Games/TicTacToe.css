@@ -46,6 +46,14 @@
   transform: translateY(5px);
 }
 #TTT .holder button:disabled {
-  background-color: red;
+  background-color: #282828;
 }
-
+#TTT[game-status="win"] {
+  background-color: #b8bb26;
+}
+#TTT[game-status="draw"] {
+  background-color: #ebdbb2;
+}
+#TTT[game-status="lose"] {
+  background-color: #d65d0e;
+}
